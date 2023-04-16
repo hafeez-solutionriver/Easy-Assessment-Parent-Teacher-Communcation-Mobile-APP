@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:id="@+id/provide_feedback_item_teacher"
+    android:title="Provide Feedback"
+    android:icon="@drawable/providefeedback"
+    />
+
+    <item
+        android:id="@+id/show_feedback_item_teacher"
+        android:title="Show Feedback"
+        android:icon="@drawable/showfeedback"
+        />
+
+
+    <item
+        android:id="@+id/view_progress_item_teacher"
+        android:title="View Progress"
+        android:icon="@drawable/viewprogress"
+        />
+
+
+    <item
+        android:id="@+id/send_reminder_item_teacher"
+        android:title="Send Reminder"
+        android:icon="@drawable/announcement"
+        />
+
+    <item
+        android:id="@+id/enrolled_subjects_item_teacher"
+        android:title="Enrolled Subjects"
+        android:icon="@drawable/subjects"
+        />
+
+    <item
+        android:id="@+id/enrolled_students_item_teacher"
+        android:title="Enrolled Students"
+        android:icon="@drawable/enrolled"
+        />
+    <item
+        android:id="@+id/notification_item_teacher"
+        android:title="Notification"
+        android:icon="@drawable/notification"
+        />
+
+</menu>

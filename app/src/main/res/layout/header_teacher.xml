@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:background="@color/purple_500"
+    android:padding="14dp">
+
+    <ImageView
+        android:id="@+id/header_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:contentDescription="Header Image"
+        android:scaleType="fitXY"
+        android:src="@drawable/teacher" />
+
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_image"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/dm_sans"
+        android:text="Teacher Name"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/design_default_color_surface"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:typeface="normal" />
+
+</RelativeLayout>
