@@ -17,36 +17,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.INTERNET), 1211);
-        } else {
-
-            // Permission already granted, proceed with internet-related tasks
-        }
-
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
 
-        if (requestCode == 121) {
-
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-
-
-            }
-
-
-        }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 fun parent(v: View)
 {
 
