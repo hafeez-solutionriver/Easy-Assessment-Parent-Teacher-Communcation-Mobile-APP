@@ -59,6 +59,13 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         navigationView.setNavigationItemSelectedListener(this)
 
 
+        val fragmentManager = supportFragmentManager
+
+        val ft = fragmentManager.beginTransaction()
+        ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment())
+
+        ft.commit()
+
     }
 
     //Step 3

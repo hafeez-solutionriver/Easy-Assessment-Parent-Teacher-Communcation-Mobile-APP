@@ -65,7 +65,13 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         navigationView.setNavigationItemSelectedListener(this)
 
 
+        val fragmentManager = supportFragmentManager
 
+        val ft = fragmentManager.beginTransaction()
+
+        ft.replace(R.id.parent_fragment_container,ShowFeedbackParentFragment())
+
+        ft.commit()
 
     }
 
