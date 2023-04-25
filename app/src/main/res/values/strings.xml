@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Asaan Assessment</string>
-
+<string name="select_student_prompt">Select a student</string>
+    <string name="select_subject_prompt">Select a student</string>
 
     <string name="OpenDrawer">Open Navigation</string>
 

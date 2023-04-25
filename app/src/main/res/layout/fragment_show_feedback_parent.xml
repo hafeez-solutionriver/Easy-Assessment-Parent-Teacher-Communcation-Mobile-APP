@@ -13,24 +13,81 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp">
 
-        <Spinner
-            android:id="@+id/subject_spinner"
+        <androidx.cardview.widget.CardView
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:prompt="Select a subject"
-            />
+            android:layout_weight="1"
+            android:layout_marginRight="8dp"
 
-        <Spinner
-            android:id="@+id/student_spinner"
+            android:elevation="2dp"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select a subject"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/subject_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:prompt="@string/select_subject_prompt" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:prompt="Select a student"
-/>
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+
+            android:elevation="2dp"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select a student"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/student_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:prompt="@string/select_student_prompt" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 
-
+    <com.anychart.AnyChartView
+        android:id="@+id/chart_view_parent_show_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
 
 </FrameLayout>
