@@ -4,7 +4,12 @@
     <string name="select_subject_prompt">Select a student</string>
 
     <string name="OpenDrawer">Open Navigation</string>
-
+    <string-array name="programming_languages">
+        <item>Java</item>
+        <item>Kotlin</item>
+        <item>Python</item>
+        <item>CPP</item>
+    </string-array>
     <string name="CloseDrawer">Close Navigation</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
