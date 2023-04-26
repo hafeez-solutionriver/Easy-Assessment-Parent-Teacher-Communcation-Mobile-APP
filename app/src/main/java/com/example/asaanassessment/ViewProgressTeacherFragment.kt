@@ -5,55 +5,82 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import com.anychart.AnyChartView
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ViewProgressTeacherFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ViewProgressTeacherFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ViewProgressTeacherFragment : Fragment(),AdapterView.OnItemSelectedListener {
+    var StudentIndexSelected:Int = -1
+    var SubjectIndexSelected:Int=-1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_view_progress_teacher, container, false)
+        val view = inflater.inflate(R.layout.fragment_view_progress_teacher, container, false)
+
+
+        val autoCompleteTextViewSubject: AutoCompleteTextView = view.findViewById(R.id.teacher_subject_selection)
+        val items = listOf("English", "Maths", "Physics")
+
+// Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
+        autoCompleteTextViewSubject.setAdapter(adapter)
+
+// Add an item click listener to the AutoCompleteTextView
+        autoCompleteTextViewSubject.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            Toast.makeText(requireContext(), "Selected item: $selectedItem", Toast.LENGTH_SHORT)
+                .show()
+
+
+        }
+
+
+
+        val autoCompleteTextViewStudent: AutoCompleteTextView = view.findViewById(R.id.teacher_student_selection)
+        val student = listOf("Hafeez", "Rauf", "Qudoos")
+
+// Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
+        val adapterStudent = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, student)
+        autoCompleteTextViewStudent.setAdapter(adapterStudent)
+
+// Add an item click listener to the AutoCompleteTextView
+        autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            Toast.makeText(requireContext(), "Selected Student: $selectedItem", Toast.LENGTH_SHORT)
+                .show()
+
+
+        }
+
+
+        return view
+        //
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ViewProgressTeacherFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ViewProgressTeacherFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+        when(p0?.id) {
+            R.id.teacher_student_selection-> {
+                StudentIndexSelected = p2
+
             }
+            R.id.teacher_subject_selection -> {
+                SubjectIndexSelected = p2
+            }
+        }
     }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+    }
+
 }
