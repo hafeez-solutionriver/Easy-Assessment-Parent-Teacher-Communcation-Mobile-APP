@@ -77,7 +77,7 @@ class ViewProgressParentFragment : Fragment() {
 
                 if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
 
-                    displayGraph(requireView())
+    displayGraph(requireView())
                 }
 
             }
@@ -188,3 +188,4 @@ class ViewProgressParentFragment : Fragment() {
             setValue("value3", value3)
         }
     }
+
