@@ -1,16 +1,17 @@
 package com.example.asaanassessment
 
 
-
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-
+import androidx.fragment.app.Fragment
+import com.google.cloud.translate.Translate
+import com.google.cloud.translate.TranslateOptions
 
 class ShowFeedbackParentFragment : Fragment(){
 
@@ -56,12 +57,44 @@ class ShowFeedbackParentFragment : Fragment(){
                 val selectedItem = listView.getItemAtPosition(position) as CustomListItem
                 val review = selectedItem.review
 
-                val alertDialog = AlertDialog.Builder(requireContext()).create()
-                alertDialog.setTitle("Review")
-                alertDialog.setMessage(review)
+                // Create a progress dialog
+                val progressDialog = ProgressDialog(requireContext())
+                progressDialog.setMessage("Translating...")
+                progressDialog.show()
 
+                // Run the network call on a separate thread
+                Thread {
+                    try {
+                        // Create a Translate client.
+                        val options = TranslateOptions.newBuilder()
+                            .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
+                            .build()
+                        val translate = options.service
 
-                alertDialog.show()
+                        // Translate the text
+                        val translation = translate.translate(
+                            review,
+                            Translate.TranslateOption.sourceLanguage("en"),
+                            Translate.TranslateOption.targetLanguage("sd")
+                        )
+                        val translatedText = translation.translatedText
+
+                        // Update the UI on the main thread
+                        view.post {
+                            // Dismiss the progress dialog
+                            progressDialog.dismiss()
+
+                            // Display the translated text
+                            val alertDialog = AlertDialog.Builder(requireContext()).create()
+                            alertDialog.setTitle("Review")
+                            alertDialog.setMessage("$translatedText")
+                            alertDialog.show()
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }.start()
             }
         return view
         //
