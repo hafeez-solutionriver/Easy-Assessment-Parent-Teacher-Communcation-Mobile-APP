@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 
 
+    android:layout_margin="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -19,29 +20,34 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/subject_name"
+                android:id="@+id/sender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textColor="@android:color/black"
-                android:text="Subject Name"/>
+                android:text="Sender"/>
+
+
 
             <TextView
-                android:id="@+id/homework_name"
-                android:layout_width="match_parent"
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:textSize="14sp"
                 android:textColor="@android:color/black"
-                android:text="Homework Name"/>
+                android:text="Date"/>
 
             <TextView
-                android:id="@+id/student_name_with_id"
-                android:layout_width="match_parent"
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:textSize="14sp"
                 android:textColor="@android:color/black"
-                android:text="Student Name with ID"/>
+                android:text="Time"/>
+
 
         </LinearLayout>
 
@@ -53,33 +59,21 @@
             >
 
             <TextView
-                android:id="@+id/review"
-                android:layout_width="wrap_content"
+                android:id="@+id/title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:textSize="14sp"
                 android:textColor="@android:color/black"
-                android:text="Review"/>
+                android:text="Title"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:text="Description"/>
 
-                <Button
-
-                    android:id="@+id/translate_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="Translate"/>
-
-                <Button
-                    android:id="@+id/reply_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Give Reply"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 

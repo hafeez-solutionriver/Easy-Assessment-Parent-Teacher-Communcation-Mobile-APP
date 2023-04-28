@@ -1,6 +1,7 @@
 package com.example.asaanassessment
 
 
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
@@ -13,12 +14,13 @@ import androidx.fragment.app.Fragment
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 
-class ShowFeedbackParentFragment : Fragment(){
+class ShowFeedbackParentFragment() : Fragment(){
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        requireActivity().actionBar?.title="Show Feedback"
     }
 
     override fun onCreateView(
@@ -50,67 +52,14 @@ class ShowFeedbackParentFragment : Fragment(){
 
 
 
-        listView.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
-                val selectedItem = listView.getItemAtPosition(position) as CustomListItem
-                val review = selectedItem.review
 
-                // Create an AlertDialog
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setTitle("Select your language")
-                builder.setIcon(R.drawable.baseline_language_24)
-                builder.setItems(arrayOf("Sindhi", "Urdu")) { dialog, which ->
-                    // Get the selected language
-                    val language = when (which) {
-                        0 -> "sd"
-                        1 -> "ur"
-                        else -> ""
-                    }
 
-                    // Create a progress dialog
-                    val progressDialog = ProgressDialog(requireContext())
-                    progressDialog.setMessage("Translating...")
-                    progressDialog.show()
 
-                    // Run the network call on a separate thread
-                    Thread {
-                        try {
-                            // Create a Translate client.
-                            val options = TranslateOptions.newBuilder()
-                                .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
-                                .build()
-                            val translate = options.service
-
-                            // Translate the text
-                            val translation = translate.translate(
-                                review,
-                                Translate.TranslateOption.sourceLanguage("en"),
-                                Translate.TranslateOption.targetLanguage(language)
-                            )
-                            val translatedText = translation.translatedText
-
-                            // Update the UI on the main thread
-                            view.post {
-                                // Dismiss the progress dialog
-                                progressDialog.dismiss()
-
-                                // Display the translated text
-                                val alertDialog = AlertDialog.Builder(requireContext()).create()
-                                alertDialog.setTitle("Review")
-                                alertDialog.setMessage("$translatedText")
-                                alertDialog.show()
-                            }
-
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }.start()
-                }
-                builder.create().show()
-            }
         return view
         //
     }
+
+
 
 
 }
@@ -122,11 +71,112 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
         val itemView = convertView ?: LayoutInflater.from(context)
             .inflate(R.layout.custom_list_view_parent, parent, false)
 
+
+
         val subjectTextView = itemView.findViewById<TextView>(R.id.subject_name)
         val homeworkTextView = itemView.findViewById<TextView>(R.id.homework_name)
         val studentTextView = itemView.findViewById<TextView>(R.id.student_name_with_id)
         val reviewTextView = itemView.findViewById<TextView>(R.id.review)
         val currentItem = data[position]
+
+
+        val btn = itemView.findViewById<Button>(R.id.translate_button)
+
+        val giveReply = itemView.findViewById<Button>(R.id.reply_button)
+
+        giveReply.setOnClickListener {
+
+            if(giveReply.text.equals("Give Reply"))
+            {
+                val dialog = Dialog(context)
+                dialog.setContentView(R.layout.give_reply_dialog)
+
+                val sendButton = dialog.findViewById<Button>(R.id.send_button)
+                val textField = dialog.findViewById<EditText>(R.id.text_field)
+
+                sendButton.setOnClickListener {
+                    val reply = textField.text.toString()
+                    // now store this reply firebase
+
+                    giveReply.setText("View Reply")
+
+
+                    dialog.dismiss() // Dismiss the dialog box after the operation is completed
+                }
+
+                dialog.show()
+            }
+            else
+            {
+                val alertDialog = AlertDialog.Builder(context).create()
+                alertDialog.setTitle("Your Reply")
+                alertDialog.setMessage("Teacher Reply would be shown here....")
+                alertDialog.show()
+            }
+
+        }
+
+
+
+        btn.setOnClickListener {
+
+
+            val review = currentItem.review
+
+            // Create an AlertDialog
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Select your language")
+            builder.setIcon(R.drawable.baseline_language_24)
+            builder.setItems(arrayOf("Sindhi", "Urdu")) { dialog, which ->
+                // Get the selected language
+                val language = when (which) {
+                    0 -> "sd"
+                    1 -> "ur"
+                    else -> ""
+                }
+
+                // Create a progress dialog
+                val progressDialog = ProgressDialog(context)
+                progressDialog.setMessage("Translating...")
+                progressDialog.show()
+
+                // Run the network call on a separate thread
+                Thread {
+                    try {
+                        // Create a Translate client.
+                        val options = TranslateOptions.newBuilder()
+                            .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
+                            .build()
+                        val translate = options.service
+
+                        // Translate the text
+                        val translation = translate.translate(
+                            review,
+                            Translate.TranslateOption.sourceLanguage("en"),
+                            Translate.TranslateOption.targetLanguage(language)
+                        )
+                        val translatedText = translation.translatedText
+
+                        // Update the UI on the main thread
+                        it.post {
+                            // Dismiss the progress dialog
+                            progressDialog.dismiss()
+
+                            // Display the translated text
+                            val alertDialog = AlertDialog.Builder(context).create()
+                            alertDialog.setTitle("Review")
+                            alertDialog.setMessage("$translatedText")
+                            alertDialog.show()
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }.start()
+            }
+            builder.create().show()
+
+        }
 
         subjectTextView.text = currentItem.subjectName
         homeworkTextView.text = currentItem.homeworkName

@@ -28,44 +28,50 @@ class Parent_Log_In : AppCompatActivity() {
 
 
     fun log_in(v: View) {
-        val inputId = findViewById<TextView>(R.id.parent_id).text.toString()
-        val inputPassword = findViewById<TextView>(R.id.teacher_password).text.toString()
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("Parent")
+//        val inputId = findViewById<TextView>(R.id.parent_id).text.toString()
+//        val inputPassword = findViewById<TextView>(R.id.teacher_password).text.toString()
+//        val database = FirebaseDatabase.getInstance()
+//        val myRef = database.getReference("Parent")
+//
+//        val progressDialog = ProgressDialog.show(
+//            this@Parent_Log_In, // context
+//            "Authentication", // title
+//            "Loading. Please wait...", // message
+//            true // indeterminate
+//        )
+//
+//        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                runOnUiThread {
+//
+//
+//                    // Iterate over the children of the Parent node to check for a matching Parent ID and Password.
+//                    for (parentSnapshot in dataSnapshot.children) {
+//                        if (inputId.equals(parentSnapshot.key.toString()) && inputPassword.equals(parentSnapshot.child("Password").getValue(String::class.java).toString())) {
+//                            progressDialog.dismiss() // hide the dialog when the data is retrieved
+//                            val intent = Intent(this@Parent_Log_In,Parent::class.java)
+//                            intent.putExtra("Name",parentSnapshot.child("Name").getValue(String::class.java).toString())
+//                            startActivity(intent)
+//                            return@runOnUiThread
+//                        }
+//                    }
+//
+//                    progressDialog.dismiss() // hide the dialog when the data is retrieved
+//
+//                    Toast.makeText(this@Parent_Log_In,"Incorrect Parent ID or Password",Toast.LENGTH_LONG).show()
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                progressDialog.dismiss() // hide the dialog if there is an error
+//            }
+//        })
 
-        val progressDialog = ProgressDialog.show(
-            this@Parent_Log_In, // context
-            "Authentication", // title
-            "Loading. Please wait...", // message
-            true // indeterminate
-        )
-
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                runOnUiThread {
 
 
-                    // Iterate over the children of the Parent node to check for a matching Parent ID and Password.
-                    for (parentSnapshot in dataSnapshot.children) {
-                        if (inputId.equals(parentSnapshot.key.toString()) && inputPassword.equals(parentSnapshot.child("Password").getValue(String::class.java).toString())) {
-                            progressDialog.dismiss() // hide the dialog when the data is retrieved
-                            val intent = Intent(this@Parent_Log_In,Parent::class.java)
-                            intent.putExtra("Name",parentSnapshot.child("Name").getValue(String::class.java).toString())
+        val intent = Intent(this@Parent_Log_In,Parent::class.java)
+                            intent.putExtra("Name","Hafeez")
                             startActivity(intent)
-                            return@runOnUiThread
-                        }
-                    }
-
-                    progressDialog.dismiss() // hide the dialog when the data is retrieved
-
-                    Toast.makeText(this@Parent_Log_In,"Incorrect Parent ID or Password",Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                progressDialog.dismiss() // hide the dialog if there is an error
-            }
-        })
     }
 
 

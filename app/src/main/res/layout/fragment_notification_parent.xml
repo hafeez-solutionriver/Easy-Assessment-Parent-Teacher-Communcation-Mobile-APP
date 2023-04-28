@@ -5,10 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".NotificationParentFragment">
 
-    <TextView
-        android:id="@+id/textView2"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Notificaiton parent"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4" />
+        >
+
+
+        <ListView
+            android:id="@+id/list_view_parent_notification"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </FrameLayout>

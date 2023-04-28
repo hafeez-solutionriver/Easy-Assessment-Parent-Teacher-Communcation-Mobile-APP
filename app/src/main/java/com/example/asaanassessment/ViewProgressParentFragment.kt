@@ -2,6 +2,7 @@ package com.example.asaanassessment
 
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +20,14 @@ import com.anychart.enums.TooltipPositionMode
 import com.anychart.graphics.vector.Stroke
 
 
-class ViewProgressParentFragment : Fragment() {
+class ViewProgressParentFragment() : Fragment() {
 
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
 
     }

@@ -1,7 +1,5 @@
 package com.example.asaanassessment
 
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -12,10 +10,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.navigation.NavigationView
 
+
 class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    lateinit var drawerLayout:DrawerLayout;
-    lateinit var navigationView:NavigationView
+    lateinit var drawerLayout: DrawerLayout;
+    lateinit var navigationView: NavigationView
     lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,9 +31,8 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         navigationView = findViewById(R.id.parent_navigationView)
         toolbar = findViewById(R.id.toolbar_parent)
 
-        navigationView.getHeaderView(0).findViewById<TextView>(R.id.header_title).text = intent.getStringExtra("Name")
-
-
+        navigationView.getHeaderView(0).findViewById<TextView>(R.id.header_title).text =
+            intent.getStringExtra("Name")
 
 
 //        // Create the gradient drawable
@@ -53,9 +51,10 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         setSupportActionBar(toolbar)
 
 
-
-        var actionbartoogle= ActionBarDrawerToggle(this,
-            drawerLayout,toolbar,R.string.OpenDrawer,R.string.CloseDrawer)
+        var actionbartoogle = ActionBarDrawerToggle(
+            this,
+            drawerLayout, toolbar, R.string.OpenDrawer, R.string.CloseDrawer
+        )
 
         drawerLayout.addDrawerListener(actionbartoogle)
 
@@ -69,7 +68,7 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
         val ft = fragmentManager.beginTransaction()
 
-        ft.replace(R.id.parent_fragment_container,ShowFeedbackParentFragment())
+        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment())
 
         ft.commit()
 
@@ -84,24 +83,24 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
         val id = item.itemId
 
-        if(id==R.id.show_feedback_item_parent)
-        {
+        if (id == R.id.show_feedback_item_parent) {
 
 
-            ft.replace(R.id.parent_fragment_container,ShowFeedbackParentFragment())
+            ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment())
 
 
-        }
-        else if(id==R.id.view_progress_item_parent)
-        {
+        } else if (id == R.id.view_progress_item_parent) {
 
-            ft.replace(R.id.parent_fragment_container,ViewProgressParentFragment())
-        }
-        else if(id==R.id.notification_item_parent)
-        {
+            ft.replace(R.id.parent_fragment_container, ViewProgressParentFragment())
+        } else if (id == R.id.notification_item_parent) {
 
-            ft.replace(R.id.parent_fragment_container,NotificationParentFragment())
-        }
+
+            ft.replace(R.id.parent_fragment_container, NotificationParentFragment())
+        } else if (id == R.id.logout_item_parent) {
+
+        this@Parent.finish()
+
+    }
 
         ft.commit()
         drawerLayout.closeDrawer(GravityCompat.START)
