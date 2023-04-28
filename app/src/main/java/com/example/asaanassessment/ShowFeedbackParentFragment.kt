@@ -19,8 +19,6 @@ class ShowFeedbackParentFragment : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
     }
 
     override fun onCreateView(
@@ -33,13 +31,13 @@ class ShowFeedbackParentFragment : Fragment(){
         val listView = view.findViewById<ListView>(R.id.list_view_parent_showFeedback)
 
         val itemList = listOf(
-            CustomListItem("Maths", "Chapter 1", "John (123)", "Great homework, very helpful!"),
+            CustomListItem("Maths", "Chapter 1", "John (123)", "Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful!" ),
             CustomListItem("Science", "Experiment 3", "Emma (234)", "Interesting experiment, enjoyed doing it."),
             CustomListItem("English", "Essay Writing", "David (345)", "Tough assignment, but learned a lot."),
             CustomListItem("Social Studies", "Project Work", "Sophie (456)", "Enjoyed researching and presenting."),
             CustomListItem("Maths", "Chapter 1", "John (123)", "Good practice problems."),
             CustomListItem("Science", "Exp# 3", "Emma (234)", "Could have used more detailed instructions."),
-            CustomListItem("English", "Essay Writing", "David (345)", "Confusing prompt, had to clarify with teacher."),
+            CustomListItem("English", "Essay Writing", "David (345)", "Confusing prompt, had to clarify with teacher.Confusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacher"),
             CustomListItem("Social Studies", "Project Work", "Sophie (456)", "Fun project, got to work with classmates."),
             CustomListItem("Maths", "Chapter 1", "John (123)", "Clear explanations, understood the concept well."),
             CustomListItem("Science", "Exp# 3", "Emma (234)", "Messy experiment, hard to keep track of materials."),
@@ -57,44 +55,58 @@ class ShowFeedbackParentFragment : Fragment(){
                 val selectedItem = listView.getItemAtPosition(position) as CustomListItem
                 val review = selectedItem.review
 
-                // Create a progress dialog
-                val progressDialog = ProgressDialog(requireContext())
-                progressDialog.setMessage("Translating...")
-                progressDialog.show()
-
-                // Run the network call on a separate thread
-                Thread {
-                    try {
-                        // Create a Translate client.
-                        val options = TranslateOptions.newBuilder()
-                            .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
-                            .build()
-                        val translate = options.service
-
-                        // Translate the text
-                        val translation = translate.translate(
-                            review,
-                            Translate.TranslateOption.sourceLanguage("en"),
-                            Translate.TranslateOption.targetLanguage("sd")
-                        )
-                        val translatedText = translation.translatedText
-
-                        // Update the UI on the main thread
-                        view.post {
-                            // Dismiss the progress dialog
-                            progressDialog.dismiss()
-
-                            // Display the translated text
-                            val alertDialog = AlertDialog.Builder(requireContext()).create()
-                            alertDialog.setTitle("Review")
-                            alertDialog.setMessage("$translatedText")
-                            alertDialog.show()
-                        }
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                // Create an AlertDialog
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Select your language")
+                builder.setIcon(R.drawable.baseline_language_24)
+                builder.setItems(arrayOf("Sindhi", "Urdu")) { dialog, which ->
+                    // Get the selected language
+                    val language = when (which) {
+                        0 -> "sd"
+                        1 -> "ur"
+                        else -> ""
                     }
-                }.start()
+
+                    // Create a progress dialog
+                    val progressDialog = ProgressDialog(requireContext())
+                    progressDialog.setMessage("Translating...")
+                    progressDialog.show()
+
+                    // Run the network call on a separate thread
+                    Thread {
+                        try {
+                            // Create a Translate client.
+                            val options = TranslateOptions.newBuilder()
+                                .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
+                                .build()
+                            val translate = options.service
+
+                            // Translate the text
+                            val translation = translate.translate(
+                                review,
+                                Translate.TranslateOption.sourceLanguage("en"),
+                                Translate.TranslateOption.targetLanguage(language)
+                            )
+                            val translatedText = translation.translatedText
+
+                            // Update the UI on the main thread
+                            view.post {
+                                // Dismiss the progress dialog
+                                progressDialog.dismiss()
+
+                                // Display the translated text
+                                val alertDialog = AlertDialog.Builder(requireContext()).create()
+                                alertDialog.setTitle("Review")
+                                alertDialog.setMessage("$translatedText")
+                                alertDialog.show()
+                            }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }.start()
+                }
+                builder.create().show()
             }
         return view
         //
