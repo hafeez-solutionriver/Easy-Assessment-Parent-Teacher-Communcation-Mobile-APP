@@ -96,7 +96,7 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
 
             ft.replace(R.id.parent_fragment_container, NotificationParentFragment())
-        } else if (id == R.id.logout_item_parent) {
+        } else if (id == R.id.logout_item_teacher) {
 
         this@Parent.finish()
 

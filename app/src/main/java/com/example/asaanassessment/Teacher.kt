@@ -62,10 +62,10 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         val fragmentManager = supportFragmentManager
 
         val ft = fragmentManager.beginTransaction()
-        ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment())
+
+        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment())
 
         ft.commit()
-
     }
 
     //Step 3
@@ -125,6 +125,12 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
 
             ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment())
 
+        }
+
+        else if (id == R.id.logout_item_teacher) {
+
+
+            this@Teacher.finish()
         }
 
 

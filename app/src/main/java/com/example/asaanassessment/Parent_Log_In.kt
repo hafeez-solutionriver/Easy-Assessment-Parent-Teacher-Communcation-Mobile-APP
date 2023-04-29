@@ -68,7 +68,6 @@ class Parent_Log_In : AppCompatActivity() {
 //        })
 
 
-
         val intent = Intent(this@Parent_Log_In,Parent::class.java)
                             intent.putExtra("Name","Hafeez")
                             startActivity(intent)

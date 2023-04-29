@@ -45,7 +45,7 @@ dependencies {
     }
 
     annotationProcessor 'com.google.cloud:google-cloud-translate:2.16.0'
-
+    implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

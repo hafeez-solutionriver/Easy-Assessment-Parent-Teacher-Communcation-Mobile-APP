@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".EnrolledSubjectsTeacherFragment">
 
-    <TextView
-        android:id="@+id/textView4"
+    <ListView
+        android:id="@+id/list_view_enrolledsubjects"
+        android:layout_margin="2dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Enrolled Courses"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4" />
+        android:layout_height="wrap_content"/>
+
 </FrameLayout>

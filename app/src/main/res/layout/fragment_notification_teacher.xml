@@ -5,10 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".NotificationTeacherFragment">
 
-    <TextView
-        android:id="@+id/textView5"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Notificaiton Teacher"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4" />
+        >
+
+
+    <ListView
+        android:id="@+id/list_view_teacher_notification"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 </FrameLayout>

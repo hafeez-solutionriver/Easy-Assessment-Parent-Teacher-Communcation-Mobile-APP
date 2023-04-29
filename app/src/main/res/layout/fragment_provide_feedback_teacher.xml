@@ -3,12 +3,109 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProvideFeedbackTeacherFragment">
 
-    <TextView
-        android:id="@+id/textView9"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Provide Feedback"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4" />
+        android:orientation="vertical"
+        android:layout_marginTop="15dp"
+        >
+
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="80dp"
+
+            android:src="@drawable/givefeedbackimage"
+            />
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintLeft_toLeftOf="parent"
+
+
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Inside text input layout add
+                an auto complete text view
+                    and make its input type to none-->
+            <AutoCompleteTextView
+
+                android:id="@+id/teacher_subject_selection_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:text="Select a subject" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Inside text input layout add
+                an auto complete text view
+                    and make its input type to none-->
+            <AutoCompleteTextView
+                android:id="@+id/teacher_student_selection_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                android:text="Select a child"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/teacherReviewField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Review "
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <me.zhanghai.android.materialratingbar.MaterialRatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="70dp"
+            android:id="@+id/rating"
+            android:layout_marginLeft="25dp"
+
+            style="@style/Widget.MaterialRatingBar.RatingBar" />
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+
+            android:text="Send"/>
+
+
+
+    </LinearLayout>
+
+    </ScrollView>
 </FrameLayout>

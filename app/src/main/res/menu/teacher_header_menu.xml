@@ -43,4 +43,10 @@
         android:icon="@drawable/notification"
         />
 
+    <item
+        android:id="@+id/logout_item_teacher"
+        android:title="Log out"
+        android:icon="@drawable/baseline_logout_24"
+        />
+
 </menu>

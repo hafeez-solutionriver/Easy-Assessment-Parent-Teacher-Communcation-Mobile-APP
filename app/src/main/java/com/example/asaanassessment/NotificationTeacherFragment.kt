@@ -1,32 +1,25 @@
 package com.example.asaanassessment
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import java.text.SimpleDateFormat
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [NotificationTeacherFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class NotificationTeacherFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -34,26 +27,91 @@ class NotificationTeacherFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notification_teacher, container, false)
+        val view =  inflater.inflate(R.layout.fragment_notification_teacher, container, false)
+
+
+        val listView = view.findViewById<ListView>(R.id.list_view_teacher_notification)
+
+        val notifications = listOf(
+            NotificationTeacher("Admin", getCurrentDate(), getCurrentTime(), "Title 1", "Description 1",false),
+            NotificationTeacher("Teacher", getCurrentDate(), getCurrentTime(), "Title 2", "Description 2",true),
+            NotificationTeacher("Admin", getCurrentDate(), getCurrentTime(), "Title 3", "Description 3",true),
+            NotificationTeacher("Teacher", getCurrentDate(), getCurrentTime(), "Title 4", "Description 4",false),
+            NotificationTeacher("Admin", getCurrentDate(), getCurrentTime(), "Title 5", "Description 5",true),
+            NotificationTeacher("Teacher", getCurrentDate(), getCurrentTime(), "Title 6", "Description 6",false),
+            NotificationTeacher("Admin", getCurrentDate(), getCurrentTime(), "Title 7", "Description 7",true),
+            NotificationTeacher("Teacher", getCurrentDate(), getCurrentTime(), "Title 8", "Description 8",false),
+            NotificationTeacher("Admin", getCurrentDate(), getCurrentTime(), "Title 9", "Description 9",false),
+            NotificationTeacher("Teacher", getCurrentDate(), getCurrentTime(), "Title 10", "Description 10",true)
+        )
+
+        val adapter = NotificationAdapterTeacher(requireContext(),notifications)
+        listView.adapter = adapter
+
+
+
+        listView.setOnItemClickListener { parent, view, position, id ->
+            val currentItem = adapter.getItem(position)
+
+            currentItem?.isSeen=true
+            adapter.notifyDataSetChanged()
+            // set background color to light blue to indicate seen
+        }
+
+        return view
+    }
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NotificationTeacherFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NotificationTeacherFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun getCurrentTime(): String {
+        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        val currentTime = Date()
+        return timeFormat.format(currentTime)
     }
+
+
+}
+data class NotificationTeacher(
+    val sender: String,
+    val date: String,
+    val time: String,
+    val title: String,
+    val description: String,
+    var isSeen: Boolean = false
+)
+
+class NotificationAdapterTeacher(private val context: Context, private val data: List<NotificationTeacher>) :
+    ArrayAdapter<NotificationTeacher>(context, R.layout.notification_custom_view, data) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val itemView = convertView ?: LayoutInflater.from(context)
+            .inflate(R.layout.notification_custom_view, parent, false)
+
+        val senderTextView = itemView.findViewById<TextView>(R.id.sender)
+        val dateTextView = itemView.findViewById<TextView>(R.id.date)
+        val timeTextView = itemView.findViewById<TextView>(R.id.time)
+        val titleTextView = itemView.findViewById<TextView>(R.id.title)
+        val descriptionTextView = itemView.findViewById<TextView>(R.id.description)
+
+        val currentItem = data[position]
+
+        senderTextView.text = currentItem.sender
+        dateTextView.text = currentItem.date
+        timeTextView.text = currentItem.time
+        titleTextView.text = currentItem.title
+        descriptionTextView.text = currentItem.description
+
+        // Change background color based on isSeen value
+        if (currentItem.isSeen) {
+            itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
+        } else {
+            itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey))
+        }
+
+        return itemView
+    }
+
 }

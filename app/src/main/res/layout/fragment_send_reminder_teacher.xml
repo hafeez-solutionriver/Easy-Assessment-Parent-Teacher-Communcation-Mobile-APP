@@ -3,12 +3,93 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".SendReminderTeacherFragment">
 
-    <TextView
-        android:id="@+id/textView6"
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Send Reminder"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4" />
+        android:orientation="vertical"
+        android:layout_margin="8dp"
+        >
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="60dp"
+
+            android:src="@drawable/reminder"
+            />
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+
+            app:layout_constraintLeft_toLeftOf="parent"
+
+
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <AutoCompleteTextView
+
+                android:id="@+id/teacher_subject_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:text="Select a subject" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/notificationtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/notificationdescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:hint="Description"
+
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="80dp"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/sendreminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+
+            android:text="Send Reminder"/>
+
+
+    </LinearLayout>
+
+</ScrollView>
 </FrameLayout>
