@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 
 
 
-class ShowFeedbackTeacherFragment : Fragment() {
+class ShowFeedbackTeacherFragment(val teacher:String) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

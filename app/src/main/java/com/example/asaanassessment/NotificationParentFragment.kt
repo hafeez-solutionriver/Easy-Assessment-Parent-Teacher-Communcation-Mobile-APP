@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class NotificationParentFragment() : Fragment() {
+class NotificationParentFragment(val parentId:String) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

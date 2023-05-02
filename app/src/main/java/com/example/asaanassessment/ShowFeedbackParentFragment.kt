@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 
-class ShowFeedbackParentFragment() : Fragment(){
+class ShowFeedbackParentFragment(parentId:String) : Fragment(){
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

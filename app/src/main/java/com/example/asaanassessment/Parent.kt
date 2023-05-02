@@ -1,5 +1,7 @@
 package com.example.asaanassessment
 
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -21,18 +23,12 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_parent)
 
-
-
-
-
-
-
         drawerLayout = findViewById(R.id.drawer_parent)
         navigationView = findViewById(R.id.parent_navigationView)
         toolbar = findViewById(R.id.toolbar_parent)
 
         navigationView.getHeaderView(0).findViewById<TextView>(R.id.header_title).text =
-            intent.getStringExtra("Name")
+            intent.getStringExtra("Name").toString()
 
 
 //        // Create the gradient drawable
@@ -68,7 +64,7 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
         val ft = fragmentManager.beginTransaction()
 
-        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment())
+        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment( intent.getStringExtra("Id").toString()))
 
         ft.commit()
 
@@ -86,19 +82,26 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         if (id == R.id.show_feedback_item_parent) {
 
 
-            ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment())
+            ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment(intent.getStringExtra("Id").toString()))
 
 
         } else if (id == R.id.view_progress_item_parent) {
 
-            ft.replace(R.id.parent_fragment_container, ViewProgressParentFragment())
+            ft.replace(R.id.parent_fragment_container, ViewProgressParentFragment(intent.getStringExtra("Id").toString()))
         } else if (id == R.id.notification_item_parent) {
 
 
-            ft.replace(R.id.parent_fragment_container, NotificationParentFragment())
-        } else if (id == R.id.logout_item_teacher) {
+            ft.replace(R.id.parent_fragment_container, NotificationParentFragment(intent.getStringExtra("Id").toString()))
+        } else if (id == R.id.logout_item_parent) {
 
-        this@Parent.finish()
+            val applicationBasedPref =getSharedPreferences("Parent", Context.MODE_PRIVATE)
+            val ed = applicationBasedPref.edit()
+
+            ed.clear()
+            ed.commit()
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
 
     }
 

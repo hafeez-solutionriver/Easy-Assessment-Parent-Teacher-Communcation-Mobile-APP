@@ -15,7 +15,7 @@ import java.util.*
 
 
 
-class NotificationTeacherFragment : Fragment() {
+class NotificationTeacherFragment(val teacher:String) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -15,7 +15,7 @@
     <item
         android:id="@+id/notification_item_parent"
         android:title="Notification"
-        android:icon="@drawable/notification"
+        android:icon="@drawable/notification_ring_svgrepo_com"
         />
 
     <item

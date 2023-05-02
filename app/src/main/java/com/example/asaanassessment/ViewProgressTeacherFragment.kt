@@ -19,7 +19,7 @@ import com.anychart.enums.TooltipPositionMode
 import com.anychart.graphics.vector.Stroke
 
 
-class ViewProgressTeacherFragment : Fragment() {
+class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1

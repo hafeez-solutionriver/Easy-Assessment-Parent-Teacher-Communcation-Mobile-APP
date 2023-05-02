@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
 
-class SendReminderTeacherFragment : Fragment() {
+class SendReminderTeacherFragment(val teacher:String) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -13,11 +13,13 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 
 
-class EnrolledStudentsTeacherFragment : Fragment() {
+class EnrolledStudentsTeacherFragment(val teacher:String) : Fragment() {
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
     }
 

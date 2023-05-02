@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 
 
-class EnrolledSubjectsTeacherFragment : Fragment() {
+class EnrolledSubjectsTeacherFragment(val teacher:String) : Fragment() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

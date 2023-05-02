@@ -1,10 +1,13 @@
 package com.example.asaanassessment
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -18,17 +21,21 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
     lateinit var drawerLayout:DrawerLayout;
     lateinit var navigationView:NavigationView
     lateinit var toolbar: Toolbar
+    var teacherId=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_teacher)
 
+        teacherId=intent.getStringExtra("TeacherId").toString()
         drawerLayout = findViewById(R.id.drawer_teacher)
         navigationView = findViewById(R.id.teacher_navigationView)
         toolbar = findViewById(R.id.toolbar_teacher)
 
 
-        navigationView.getHeaderView(0).findViewById<TextView>(R.id.header_title).text = intent.getStringExtra("Name")
+
+        navigationView.getHeaderView(0).findViewById<TextView>(R.id.header_title).text = intent.getStringExtra("Name").toString()
+
 
 //        // Create the gradient drawable
 //        val gradientDrawable = GradientDrawable(
@@ -63,10 +70,14 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
 
         val ft = fragmentManager.beginTransaction()
 
-        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment())
+
+        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
 
         ft.commit()
     }
+
+
+
 
     //Step 3
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -80,27 +91,27 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         if (id == R.id.enrolled_students_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container, EnrolledStudentsTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container, EnrolledStudentsTeacherFragment(intent.getStringExtra("Id").toString()))
 
         }
 
         else if (id == R.id.enrolled_subjects_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,EnrolledSubjectsTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,EnrolledSubjectsTeacherFragment(intent.getStringExtra("Id").toString()))
 
         }
 
         else if (id == R.id.show_feedback_item_teacher) {
 
-            ft.replace(R.id.teacher_fragment_container,ShowFeedbackTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,ShowFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
 
 
         }
 
         else if (id == R.id.view_progress_item_teacher) {
 
-            ft.replace(R.id.teacher_fragment_container,ViewProgressTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,ViewProgressTeacherFragment(intent.getStringExtra("Id").toString()))
 
 
         }
@@ -108,14 +119,14 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         else if (id == R.id.send_reminder_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,SendReminderTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,SendReminderTeacherFragment(intent.getStringExtra("Id").toString()))
 
         }
 
         else if (id == R.id.notification_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,NotificationTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,NotificationTeacherFragment(intent.getStringExtra("Id").toString()))
 
         }
 
@@ -123,14 +134,21 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         else if (id == R.id.provide_feedback_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment())
+            ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
 
         }
 
         else if (id == R.id.logout_item_teacher) {
 
 
-            this@Teacher.finish()
+            val applicationBasedPref =getSharedPreferences("Teacher", Context.MODE_PRIVATE)
+            val ed = applicationBasedPref.edit()
+
+            ed.clear()
+            ed.commit()
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
         }
 
 
