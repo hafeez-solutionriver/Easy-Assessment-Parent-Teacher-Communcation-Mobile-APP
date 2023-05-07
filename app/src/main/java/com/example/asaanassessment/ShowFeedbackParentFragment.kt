@@ -13,50 +13,141 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-class ShowFeedbackParentFragment(parentId:String) : Fragment(){
+class ShowFeedbackParentFragment(val parent:String) : Fragment(){
 
+
+    lateinit var subjectNames: MutableList<String>
+    lateinit var assignmentNames: MutableList<String>
+    lateinit var studentIds: MutableList<String>
+    lateinit var studentNames: MutableList<String>
+    lateinit var reviews: MutableList<String>
+    lateinit var homeworkIds: MutableList<String>
+    lateinit var parentsReply: MutableList<String>
+    private lateinit var mContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().actionBar?.title="Show Feedback"
-    }
 
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_show_feedback_parent, container, false)
 
-
+        val database = FirebaseDatabase.getInstance()
         val listView = view.findViewById<ListView>(R.id.list_view_parent_showFeedback)
-
-        val itemList = listOf(
-            CustomListItem("Maths", "Chapter 1", "John (123)", "Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful!" ),
-            CustomListItem("Science", "Experiment 3", "Emma (234)", "Interesting experiment, enjoyed doing it."),
-            CustomListItem("English", "Essay Writing", "David (345)", "Tough assignment, but learned a lot."),
-            CustomListItem("Social Studies", "Project Work", "Sophie (456)", "Enjoyed researching and presenting."),
-            CustomListItem("Maths", "Chapter 1", "John (123)", "Good practice problems."),
-            CustomListItem("Science", "Exp# 3", "Emma (234)", "Could have used more detailed instructions."),
-            CustomListItem("English", "Essay Writing", "David (345)", "Confusing prompt, had to clarify with teacher.Confusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacher"),
-            CustomListItem("Social Studies", "Project Work", "Sophie (456)", "Fun project, got to work with classmates."),
-            CustomListItem("Maths", "Chapter 1", "John (123)", "Clear explanations, understood the concept well."),
-            CustomListItem("Science", "Exp# 3", "Emma (234)", "Messy experiment, hard to keep track of materials."),
-            CustomListItem("English", "Essay Writing", "David (345)", "Interesting topic, enjoyed writing about it."),
-            CustomListItem("Social Studies", "Project Work", "Sophie (456)", "Group work was challenging but rewarding.")
-        )
-
-        val adapter = CustomListAdapter(requireContext(), itemList)
-        listView.adapter = adapter
+        val homeworkRef = database.getReference("Homework")
+        val progressDialog = ProgressDialog(mContext)
+        progressDialog.setMessage("Fetching data...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
 
 
 
+        homeworkRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
 
+                progressDialog.dismiss()
+
+                subjectNames = mutableListOf<String>()
+                assignmentNames = mutableListOf<String>()
+                studentIds = mutableListOf<String>()
+                studentNames = mutableListOf<String>()
+                reviews = mutableListOf<String>()
+                parentsReply = mutableListOf<String>()
+                homeworkIds = mutableListOf<String>()
+
+                for (homeworkSnapshot in dataSnapshot.children) {
+
+                    val databaseParentId =
+                        homeworkSnapshot.child("parentId").getValue(String::class.java)
+
+                    if (databaseParentId != null && databaseParentId.equals(
+                           parent
+                        )
+                    ) {
+
+                        homeworkIds.add(homeworkSnapshot.key.toString())
+                        studentNames.add(
+                            homeworkSnapshot.child("studentName").getValue(String::class.java)
+                                .toString()
+                        )
+                        studentIds.add(
+                            homeworkSnapshot.child("studentId").getValue(String::class.java)
+                                .toString()
+                        )
+                        assignmentNames.add(
+                            homeworkSnapshot.child("assignmentName").getValue(String::class.java)
+                                .toString()
+                        )
+                        reviews.add(
+                            homeworkSnapshot.child("review").getValue(String::class.java).toString()
+                        )
+
+                        subjectNames.add(
+                            homeworkSnapshot.child("subjectName").getValue(String::class.java)
+                                .toString()
+                        )
+
+                        parentsReply.add(
+                            homeworkSnapshot.child("parentReply").getValue(String::class.java)
+                                .toString()
+                        )
+
+
+                    }
+                }
+
+                val items = mutableListOf<CustomListItem>()
+
+                for (index in studentNames.indices) {
+                    items.add(
+                        CustomListItem(
+
+                            homeworkIds[index],
+                            subjectNames[index],
+                            assignmentNames[index],
+                            studentNames[index] + "-" + studentIds[index],
+                            reviews[index],
+                            parentsReply[index]
+
+
+                        )
+                    )
+                }
+
+                val adapter = CustomListAdapter(mContext, items)
+                listView.adapter = adapter
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+                progressDialog.dismiss()
+                Toast.makeText(
+                    mContext,
+                    databaseError.toException().toString(),
+                    Toast.LENGTH_SHORT
+                )
+            }
+
+
+        })
 
         return view
-        //
     }
 
 
@@ -71,23 +162,19 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
         val itemView = convertView ?: LayoutInflater.from(context)
             .inflate(R.layout.custom_list_view_parent, parent, false)
 
-
-
         val subjectTextView = itemView.findViewById<TextView>(R.id.subject_name)
         val homeworkTextView = itemView.findViewById<TextView>(R.id.homework_name)
         val studentTextView = itemView.findViewById<TextView>(R.id.student_name_with_id)
         val reviewTextView = itemView.findViewById<TextView>(R.id.review)
         val currentItem = data[position]
 
-
+        val currentHomeworkID = currentItem.homeWorkId
         val btn = itemView.findViewById<Button>(R.id.translate_button)
 
         val giveReply = itemView.findViewById<Button>(R.id.reply_button)
 
         giveReply.setOnClickListener {
-
-            if(giveReply.text.equals("Give Reply"))
-            {
+            if (giveReply.text.equals("Give Reply")) {
                 val dialog = Dialog(context)
                 dialog.setContentView(R.layout.give_reply_dialog)
 
@@ -95,25 +182,40 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                 val textField = dialog.findViewById<EditText>(R.id.text_field)
 
                 sendButton.setOnClickListener {
+                    val progress = ProgressDialog(context)
+                    progress.setMessage("Sending reply...")
+                    progress.setCancelable(false)
+                    progress.show()
+
                     val reply = textField.text.toString()
                     // now store this reply firebase
 
-                    giveReply.setText("View Reply")
+                    // Get a reference to your database
+                    val database = FirebaseDatabase.getInstance()
 
+                    // Get a reference to the "Homework" node
+                    val homeworkRef = database.getReference("Homework")
 
+                    // Get a reference to the "parentReply" node under the specific homework id
+                    val parentReplyRef = database.getReference("Homework/$currentHomeworkID/parentReply")
+
+                    // Set the value for parentReply
+                    parentReplyRef.setValue(reply).addOnCompleteListener {
+
+                        if (it.isSuccessful) {
+                            progress.dismiss()
+                        }
+                    }
                     dialog.dismiss() // Dismiss the dialog box after the operation is completed
                 }
-
                 dialog.show()
-            }
-            else
-            {
+            } else {
                 val alertDialog = AlertDialog.Builder(context).create()
                 alertDialog.setTitle("Your Reply")
-                alertDialog.setMessage("Teacher Reply would be shown here....")
+
+                alertDialog.setMessage("Parent Reply would be shown here....")
                 alertDialog.show()
             }
-
         }
 
 
@@ -181,15 +283,28 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
         subjectTextView.text = currentItem.subjectName
         homeworkTextView.text = currentItem.homeworkName
         studentTextView.text = currentItem.studentNameWithId
-            reviewTextView.text=currentItem.review
+        reviewTextView.text=currentItem.review
+
+        if(currentItem.parentReply.equals(""))
+        {
+            giveReply.text="Give Reply"
+        }
+        else
+        {
+            giveReply.text="View Reply"
+        }
+
         return itemView
     }
 }
 
 data class CustomListItem(
+
+    val homeWorkId:String,
     val subjectName: String,
     val homeworkName: String,
     val studentNameWithId: String,
-    val review:String
+    val review:String,
+    val parentReply:String
 )
 

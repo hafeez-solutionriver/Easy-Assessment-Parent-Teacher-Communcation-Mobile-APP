@@ -64,7 +64,7 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
         val ft = fragmentManager.beginTransaction()
 
-        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment( intent.getStringExtra("Id").toString()))
+        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment(intent.getStringExtra("Id").toString()))
 
         ft.commit()
 
@@ -87,11 +87,11 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
 
         } else if (id == R.id.view_progress_item_parent) {
 
-            ft.replace(R.id.parent_fragment_container, ViewProgressParentFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.parent_fragment_container, ViewProgressParentFragment())
         } else if (id == R.id.notification_item_parent) {
 
 
-            ft.replace(R.id.parent_fragment_container, NotificationParentFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.parent_fragment_container, NotificationParentFragment())
         } else if (id == R.id.logout_item_parent) {
 
             val applicationBasedPref =getSharedPreferences("Parent", Context.MODE_PRIVATE)

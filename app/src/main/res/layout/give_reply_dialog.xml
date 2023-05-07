@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:padding="15dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -14,10 +14,10 @@
 
     <EditText
         android:id="@+id/text_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:minLines="3" />
+        android:layout_width="350dp"
+        android:layout_height="100dp"
+
+        />
 
     <Button
         android:id="@+id/send_button"

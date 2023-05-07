@@ -27,7 +27,7 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_teacher)
 
-        teacherId=intent.getStringExtra("TeacherId").toString()
+        teacherId=intent.getStringExtra("Id").toString()
         drawerLayout = findViewById(R.id.drawer_teacher)
         navigationView = findViewById(R.id.teacher_navigationView)
         toolbar = findViewById(R.id.toolbar_teacher)
@@ -71,7 +71,7 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         val ft = fragmentManager.beginTransaction()
 
 
-        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
+        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment(teacherId))
 
         ft.commit()
     }
@@ -91,27 +91,27 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         if (id == R.id.enrolled_students_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container, EnrolledStudentsTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container, EnrolledStudentsTeacherFragment(teacherId))
 
         }
 
         else if (id == R.id.enrolled_subjects_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,EnrolledSubjectsTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,EnrolledSubjectsTeacherFragment(teacherId))
 
         }
 
         else if (id == R.id.show_feedback_item_teacher) {
 
-            ft.replace(R.id.teacher_fragment_container,ShowFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,ShowFeedbackTeacherFragment(teacherId))
 
 
         }
 
         else if (id == R.id.view_progress_item_teacher) {
 
-            ft.replace(R.id.teacher_fragment_container,ViewProgressTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,ViewProgressTeacherFragment(teacherId))
 
 
         }
@@ -119,14 +119,14 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         else if (id == R.id.send_reminder_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,SendReminderTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,SendReminderTeacherFragment(teacherId))
 
         }
 
         else if (id == R.id.notification_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,NotificationTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,NotificationTeacherFragment(teacherId))
 
         }
 
@@ -134,7 +134,7 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         else if (id == R.id.provide_feedback_item_teacher) {
 
 
-            ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.teacher_fragment_container,ProvideFeedbackTeacherFragment(teacherId))
 
         }
 

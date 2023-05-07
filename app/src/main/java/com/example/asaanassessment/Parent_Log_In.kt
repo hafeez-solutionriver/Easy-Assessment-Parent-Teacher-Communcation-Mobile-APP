@@ -53,12 +53,12 @@ class Parent_Log_In : AppCompatActivity() {
                               val applicationBasedPref =getSharedPreferences("Parent", Context.MODE_PRIVATE)
                             val ed = applicationBasedPref.edit()
 
-                            ed.putString("ParentName",parentSnapshot.child("ParentName").getValue(String::class.java).toString())
+                            ed.putString("ParentName",parentSnapshot.child("Name").getValue(String::class.java).toString())
                             ed.putString("ParentId",parentSnapshot.key.toString())
                             ed.commit()
 
                             val intent = Intent(this@Parent_Log_In,Parent::class.java)
-                            intent.putExtra("Name",parentSnapshot.child("ParentName").getValue(String::class.java).toString())
+                            intent.putExtra("Name",parentSnapshot.child("Name").getValue(String::class.java).toString())
                             intent.putExtra("Id",parentSnapshot.key.toString())
                             startActivity(intent)
                             return@runOnUiThread

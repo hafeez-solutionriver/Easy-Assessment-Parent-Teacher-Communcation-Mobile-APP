@@ -1,6 +1,7 @@
 package com.example.asaanassessment
 
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,14 +10,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class ShowFeedbackTeacherFragment(val teacher:String) : Fragment() {
 
+    lateinit var subjectNames: MutableList<String>
+    lateinit var assignmentNames: MutableList<String>
+    lateinit var studentIds: MutableList<String>
+    lateinit var studentNames: MutableList<String>
+    lateinit var reviews: MutableList<String>
+    lateinit var parentsReply: MutableList<String>
+    private lateinit var mContext: Context
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
     }
 
     override fun onCreateView(
@@ -27,33 +44,107 @@ class ShowFeedbackTeacherFragment(val teacher:String) : Fragment() {
 
         val listView = view.findViewById<ListView>(R.id.list_view_teacher_showFeedback)
 
-        val itemList = listOf(
-            CustomListItemParentFeedback("Maths", "Chapter 1", "John (123)", "Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful! Great homework, very helpful!" ,"skdhf"),
-            CustomListItemParentFeedback("Science", "Experiment 3", "Emma (234)", "Interesting experiment, enjoyed doing it.","skdhf"),
-            CustomListItemParentFeedback("English", "Essay Writing", "David (345)", "Tough assignment, but learned a lot.","skdhf"),
-            CustomListItemParentFeedback("Social Studies", "Project Work", "Sophie (456)", "Enjoyed researching and presenting.","skdhf"),
-            CustomListItemParentFeedback("Maths", "Chapter 1", "John (123)", "Good practice problems.",""),
-            CustomListItemParentFeedback("Science", "Exp# 3", "Emma (234)", "Could have used more detailed instructions.",""),
-            CustomListItemParentFeedback("English", "Essay Writing", "David (345)", "Confusing prompt, had to clarify with teacher.Confusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacherConfusing prompt, had to clarify with teacher",""),
-            CustomListItemParentFeedback("Social Studies", "Project Work", "Sophie (456)", "Fun project, got to work with classmates.",""),
-            CustomListItemParentFeedback("Maths", "Chapter 1", "John (123)", "Clear explanations, understood the concept well.","skdhf"),
-            CustomListItemParentFeedback("Science", "Exp# 3", "Emma (234)", "Messy experiment, hard to keep track of materials.","skdhf"),
-            CustomListItemParentFeedback("English", "Essay Writing", "David (345)", "Interesting topic, enjoyed writing about it.","skdhf"),
-            CustomListItemParentFeedback("Social Studies", "Project Work", "Sophie (456)", "Group work was challenging but rewarding.","")
-        )
+        val database = FirebaseDatabase.getInstance()
 
-        val adapter = CustomListAdapterParentFeedback(requireContext(), itemList)
-        listView.adapter = adapter
+        val homeworkRef = database.getReference("Homework")
+
+        val progressDialog = ProgressDialog(mContext)
+        progressDialog.setMessage("Fetching data...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        homeworkRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                progressDialog.dismiss()
+
+                subjectNames = mutableListOf<String>()
+                assignmentNames = mutableListOf<String>()
+                studentIds = mutableListOf<String>()
+                studentNames = mutableListOf<String>()
+                reviews = mutableListOf<String>()
+                parentsReply = mutableListOf<String>()
+
+                for (homeworkSnapshot in dataSnapshot.children) {
+
+                    val databaseTeacherId =
+                        homeworkSnapshot.child("teacherId").getValue(String::class.java)
+
+                    if (databaseTeacherId != null && databaseTeacherId.equals(
+                            teacher
+                        )
+                    ) {
+
+                        studentNames.add(
+                            homeworkSnapshot.child("studentName").getValue(String::class.java)
+                                .toString()
+                        )
+                        studentIds.add(
+                            homeworkSnapshot.child("studentId").getValue(String::class.java)
+                                .toString()
+                        )
+                        assignmentNames.add(
+                            homeworkSnapshot.child("assignmentName")
+                                .getValue(String::class.java)
+                                .toString()
+                        )
+                        reviews.add(
+                            homeworkSnapshot.child("review").getValue(String::class.java)
+                                .toString()
+                        )
+
+                        subjectNames.add(
+                            homeworkSnapshot.child("subjectName").getValue(String::class.java)
+                                .toString()
+                        )
+
+                        parentsReply.add(
+                            homeworkSnapshot.child("parentReply").getValue(String::class.java)
+                                .toString()
+                        )
+                    }
+                }
+
+                val items = mutableListOf<CustomListItemTeacherFeedback>()
+
+                for (index in studentNames.indices) {
+                    items.add(
+                        CustomListItemTeacherFeedback(
+                            subjectNames[index],
+                            assignmentNames[index],
+                            studentNames[index] + "-" + studentIds[index],
+                            reviews[index],
+                            parentsReply[index]
+                        )
+                    )
+                }
+
+                val adapter = CustomListAdapterParentFeedback(mContext, items)
+                listView.adapter = adapter
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                progressDialog.dismiss()
+                Toast.makeText(
+                    mContext,
+                    databaseError.toException().toString(),
+                    Toast.LENGTH_SHORT
+                )
+            }
+        })
 
         return view
+
+
         //
     }
 
 
 }
 
-class CustomListAdapterParentFeedback(private val context: Context, private val data: List<CustomListItemParentFeedback>) :
-    ArrayAdapter<CustomListItemParentFeedback>(context, R.layout.custom_list_view_teacher_showfeedback, data) {
+class CustomListAdapterParentFeedback(private val context: Context, private val data: MutableList<CustomListItemTeacherFeedback>) :
+    ArrayAdapter<CustomListItemTeacherFeedback>(context, R.layout.custom_list_view_teacher_showfeedback, data) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val itemView = convertView ?: LayoutInflater.from(context)
@@ -94,7 +185,7 @@ class CustomListAdapterParentFeedback(private val context: Context, private val 
     }
 }
 
-data class CustomListItemParentFeedback(
+data class CustomListItemTeacherFeedback(
     val subjectName: String,
     val homeworkName: String,
     val studentNameWithId: String,

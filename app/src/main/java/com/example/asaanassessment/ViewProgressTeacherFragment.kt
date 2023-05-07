@@ -9,14 +9,17 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.anychart.AnyChart
+import com.anychart.AnyChartFormat
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.data.Set
-import com.anychart.enums.Anchor
-import com.anychart.enums.MarkerType
-import com.anychart.enums.TooltipPositionMode
+import com.anychart.enums.*
 import com.anychart.graphics.vector.Stroke
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
@@ -55,7 +58,7 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
             if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
 
-              displayGraph(requireView())
+                displayGraphTeacher(requireView(),"SD-123M2","SD-123gm12")
             }
 
         }
@@ -64,6 +67,8 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
         val autoCompleteTextViewStudent: AutoCompleteTextView =
             view.findViewById(R.id.teacher_student_selection)
         val student = listOf("Hafeez", "Rauf", "Qudoos")
+
+
 
 // Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
         val adapterStudent =
@@ -77,16 +82,10 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
             if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
 
-                displayGraphTeacher(requireView())
+                displayGraphTeacher(requireView(),"SD-123M2","SD-123gm12")
             }
 
         }
-
-
-
-
-
-
         return view
         //
     }
@@ -96,95 +95,110 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
 
 
-fun displayGraphTeacher(p1: View?)
-{
+fun displayGraphTeacher(p1: View?, subjectId: String, studentId: String) {
 
     val anyChartView: AnyChartView = p1!!.findViewById<AnyChartView>(R.id.line_chart_teacher)
 
 
-    val cartesian = AnyChart.line()
+    val cartesian = AnyChart.column()
+
 
     cartesian.animation(true)
 
-    cartesian.padding(10.0, 20.0, 5.0, 20.0)
+    cartesian.padding(10.0, 10.0, 30.0, 20.0)
+    anyChartView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+    // Enable scrolling
+//    cartesian.xScroller().enabled(true)
+    cartesian.xZoom().setToPointsCount(7, false, null)
+
+    // Allow overlapping labels
+    cartesian.xAxis(0).overlapMode(LabelsOverlapMode.ALLOW_OVERLAP)
 
     cartesian.crosshair().enabled(true)
     cartesian.crosshair()
-        .yLabel(true) //
+        .yLabel(true)
         .yStroke(null as Stroke?, null, null, null as String?, null as String?)
 
-    cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
+    cartesian.tooltip().positionMode(TooltipPositionMode.CHART)
 
-    cartesian.title("Trend of Sales of the Most Popular Products of ACME Corp.")
+    cartesian.title("Student Progress Chart")
 
-    cartesian.yAxis(0).title("Number of Bottles Sold (thousands)")
+    cartesian.yAxis(0).title("Progress out of 5")
+    cartesian.yScale().minimum(0.0)
+    cartesian.yScale().maximum(5.0)
+    cartesian.yScale().ticks().interval(0.5)
+
     cartesian.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
 
+
     val seriesData: MutableList<DataEntry> = ArrayList()
-    seriesData.add(CustomDataEntryTeacher("1986", 3.6, 2.3, 2.8))
-    seriesData.add(CustomDataEntryTeacher("1987", 7.1, 4.0, 4.1))
-    seriesData.add(CustomDataEntryTeacher("1988", 8.5, 6.2, 5.1))
-    seriesData.add(CustomDataEntryTeacher("1989", 9.2, 11.8, 6.5))
-    seriesData.add(CustomDataEntryTeacher("1990", 10.1, 13.0, 12.5))
-    seriesData.add(CustomDataEntryTeacher("1991", 11.6, 13.9, 18.0))
-    seriesData.add(CustomDataEntryTeacher("1992", 16.4, 18.0, 21.0))
-    seriesData.add(CustomDataEntryTeacher("1993", 18.0, 23.3, 20.3))
-    seriesData.add(CustomDataEntryTeacher("1994", 13.2, 24.7, 19.2))
-    seriesData.add(CustomDataEntryTeacher("1995", 12.0, 18.0, 14.4))
-    seriesData.add(CustomDataEntryTeacher("1996", 3.2, 15.1, 9.2))
-    seriesData.add(CustomDataEntryTeacher("1997", 4.1, 11.3, 5.9))
-    seriesData.add(CustomDataEntryTeacher("1998", 6.3, 14.2, 5.2))
-    seriesData.add(CustomDataEntryTeacher("1999", 9.4, 13.7, 4.7))
-    seriesData.add(CustomDataEntryTeacher("2000", 11.5, 9.9, 4.2))
-    seriesData.add(CustomDataEntryTeacher("2001", 13.5, 12.1, 1.2))
-    seriesData.add(CustomDataEntryTeacher("2002", 14.8, 13.5, 5.4))
-    seriesData.add(CustomDataEntryTeacher("2003", 16.6, 15.1, 6.3))
-    seriesData.add(CustomDataEntryTeacher("2004", 18.1, 17.9, 8.9))
-    seriesData.add(CustomDataEntryTeacher("2005", 17.0, 18.9, 10.1))
-    seriesData.add(CustomDataEntryTeacher("2006", 16.6, 20.3, 11.5))
-    seriesData.add(CustomDataEntryTeacher("2007", 14.1, 20.7, 12.2))
-    seriesData.add(CustomDataEntryTeacher("2008", 15.7, 21.6, 10))
-    seriesData.add(CustomDataEntryTeacher("2009", 12.0, 22.5, 8.9))
-
-    val set = Set.instantiate()
-    set.data(seriesData)
-    val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
 
 
-    val series1 = cartesian.line(series1Mapping)
-    series1.name("Brandy")
-    series1.hovered().markers().enabled(true)
-    series1.hovered().markers()
-        .type(MarkerType.CIRCLE)
-        .size(4.0)
-    series1.tooltip()
-        .position("right")
-        .anchor(Anchor.LEFT_CENTER)
-        .offsetX(5.0)
-        .offsetY(5.0)
+    val database = FirebaseDatabase.getInstance()
+    val homeworkRef = database.getReference("Homework")
+
+    homeworkRef.addValueEventListener(object : ValueEventListener {
+
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
 
 
 
+            for (homeworkSnapshot in dataSnapshot.children) {
+
+                val databaseSubjectId = homeworkSnapshot.child("subjectId").getValue(String::class.java)
+                val databaseStudentId = homeworkSnapshot.child("studentId").getValue(String::class.java)
+                val databaseRating = homeworkSnapshot.child("rating").getValue(Long::class.java)
+
+                if (databaseSubjectId != null && databaseStudentId != null && databaseRating != null
+                    && databaseSubjectId.equals(subjectId) && databaseStudentId.equals(studentId)) {
+
+                    val assignmentName = homeworkSnapshot.child("assignmentName").getValue(String::class.java)
+
+                    if (assignmentName != null) {
+                        seriesData.add(StudentProgressDataEntryInTeacher(assignmentName, databaseRating.toDouble()))
+
+                    }
+                }
+            }
+
+            val set = Set.instantiate()
+            set.data(seriesData)
+            val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
+
+            val series1 = cartesian.column(series1Mapping)
+            series1.name("Student Progress")
+            series1.hovered().markers().enabled(true)
+            series1.hovered().markers()
+                .type(MarkerType.CIRCLE)
+                .size(4.0)
+            series1.tooltip()
+                .position("right")
+                .anchor(Anchor.LEFT_CENTER)
+                .offsetX(5.0)
+                .offsetY(5.0)
 
 
-    cartesian.legend().enabled(true)
-    cartesian.legend().fontSize(13.0)
-    cartesian.legend().padding(0.0, 0.0, 10.0, 0.0)
 
-    anyChartView.setChart(cartesian)
+
+            anyChartView.setChart(cartesian)
+
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            Toast.makeText(p1.context, databaseError.toException().toString(), Toast.LENGTH_SHORT)
+        }
+    })
 }
 
 
 
-internal class CustomDataEntryTeacher internal constructor(
+
+internal class StudentProgressDataEntryInTeacher internal constructor(
     x: String?,
     value: Number?,
-    value2: Number?,
-    value3: Number?
+
 ) :
     ValueDataEntry(x, value) {
-    init {
-        setValue("value2", value2)
-        setValue("value3", value3)
-    }
+
 }
+
