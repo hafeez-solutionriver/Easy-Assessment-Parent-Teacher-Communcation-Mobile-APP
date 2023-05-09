@@ -71,7 +71,8 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                     val subjectName =
                         subjectSnapshot.child("CourseName").getValue(String::class.java)
 
-                    if (subjectName != null) {
+                    val TeacherID = subjectSnapshot.child("TeacherId").getValue(String::class.java)
+                    if (subjectName != null && TeacherID.equals(teacher)) {
 
                         subjectNames.add(subjectName)
                         subjectIds.add(subjectSnapshot.key.toString())
@@ -278,10 +279,6 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
 
 
         }
-
-
-
-
 
         return view
     }

@@ -24,10 +24,14 @@ class ViewProgressParentFragment() : Fragment() {
 
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
-
+    private lateinit var mContext: Context
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
     }
 
     override fun onCreateView(
@@ -43,7 +47,7 @@ class ViewProgressParentFragment() : Fragment() {
 
 // Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
         val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
+            ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
         autoCompleteTextViewSubject.setAdapter(adapter)
 
 // Add an item click listener to the AutoCompleteTextView
@@ -67,7 +71,7 @@ class ViewProgressParentFragment() : Fragment() {
 
 // Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
             val adapterStudent =
-                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, student)
+                ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, student)
             autoCompleteTextViewStudent.setAdapter(adapterStudent)
 
 // Add an item click listener to the AutoCompleteTextView
@@ -81,11 +85,6 @@ class ViewProgressParentFragment() : Fragment() {
                 }
 
             }
-
-
-
-
-
 
                 return view
                 //

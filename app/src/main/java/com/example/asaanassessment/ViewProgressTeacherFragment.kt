@@ -2,6 +2,7 @@ package com.example.asaanassessment
 
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,11 +27,21 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
+    private lateinit var mContext: Context
 
+    lateinit var subjectIds: MutableList<String>
+    lateinit var subjectNames: MutableList<String>
+
+    lateinit var studentIds: MutableList<String>
+    lateinit var studentNames: MutableList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
     }
 
     override fun onCreateView(
@@ -40,14 +51,54 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
         val view = inflater.inflate(R.layout.fragment_view_progress_teacher, container, false)
 
 
+
+        val database = FirebaseDatabase.getInstance()
+        val subjectsRef = database.getReference("Subject")
+
+
+
         val autoCompleteTextViewSubject: AutoCompleteTextView =
             view.findViewById(R.id.teacher_subject_selection)
-        val items = listOf("English", "Maths", "Physics")
 
-// Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
-        autoCompleteTextViewSubject.setAdapter(adapter)
+
+        subjectsRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+
+                subjectNames = mutableListOf<String>()
+                subjectIds = mutableListOf<String>()
+                for (subjectSnapshot in dataSnapshot.children) {
+                    val subjectName =
+                        subjectSnapshot.child("CourseName").getValue(String::class.java)
+
+                    val TeacherID = subjectSnapshot.child("TeacherId").getValue(String::class.java)
+                    if (subjectName != null && TeacherID.equals(teacher)) {
+
+                        subjectNames.add(subjectName)
+                        subjectIds.add(subjectSnapshot.key.toString())
+                    }
+                }
+
+                val items = mutableListOf<String>()
+
+                for (index in subjectNames.indices) {
+                    items.add(subjectNames[index] + "  -  " + subjectIds[index])
+                }
+                val adapter =
+                    ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
+                autoCompleteTextViewSubject.setAdapter(adapter)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(mContext, databaseError.toException().toString(), Toast.LENGTH_SHORT)
+            }
+
+
+        }
+
+
+        )
 
 // Add an item click listener to the AutoCompleteTextView
         autoCompleteTextViewSubject.setOnItemClickListener { parent, view, position, id ->
@@ -58,40 +109,99 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
 
             if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
 
-                displayGraphTeacher(requireView(),"SD-123M2","SD-123gm12")
+                displayGraphTeacher(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected])
             }
+            else
 
-        }
-
-
-        val autoCompleteTextViewStudent: AutoCompleteTextView =
-            view.findViewById(R.id.teacher_student_selection)
-        val student = listOf("Hafeez", "Rauf", "Qudoos")
+            {
+                val studentRef = database.getReference("Student")
 
 
 
+                studentRef.addValueEventListener(object : ValueEventListener {
+
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+
+                        studentNames = mutableListOf<String>()
+                        studentIds = mutableListOf<String>()
+
+                        for (studentSnapshot in dataSnapshot.children) {
+                            val studentName =
+                                studentSnapshot.child("FirstName").getValue(String::class.java)
+
+                            if (studentName != null) {
+
+                                var isSameSubject=false
+
+                                var index=0
+                                for(subject in studentSnapshot.child("Subjects").children)
+                                {
+                                    if(subject.child((index++.toString())).getValue(String::class.java).equals(subjectIds[SubjectIndexSelected])){
+                                        isSameSubject=true
+                                        break;
+                                    }
+                                }
+
+                                if(!isSameSubject)
+                                {
+                                    studentNames.add(studentName)
+                                    studentIds.add(studentSnapshot.key.toString())
+                                }
+
+
+
+                            }
+                        }
+
+                        val items = mutableListOf<String>()
+
+                        for (index in studentNames.indices) {
+                            items.add(studentNames[index] + "  -  " + studentIds[index])
+                        }
+                        val autoCompleteTextViewStudent: AutoCompleteTextView =
+                            requireView().findViewById(R.id.teacher_student_selection)
+
+                        autoCompleteTextViewStudent.onItemSelectedListener
+
+                        autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
+
+                            StudentIndexSelected = position
+
+                            if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
+
+                                displayGraphTeacher(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected])
+                            }
+
+
+                        }
 // Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
-        val adapterStudent =
-            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, student)
-        autoCompleteTextViewStudent.setAdapter(adapterStudent)
+                        val adapterStudent =
+                            ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
+                        autoCompleteTextViewStudent.setAdapter(adapterStudent)
+                    }
 
-// Add an item click listener to the AutoCompleteTextView
-        autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(
+                            mContext,
+                            databaseError.toException().toString(),
+                            Toast.LENGTH_SHORT
+                        )
+                    }
 
-            StudentIndexSelected = position
 
-            if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
+                }
 
-                displayGraphTeacher(requireView(),"SD-123M2","SD-123gm12")
+
+                )
             }
 
         }
+
         return view
-        //
+
     }
 }
-
-
 
 
 
