@@ -11,12 +11,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_centerHorizontal="true"
-        android:textAlignment="center"
+
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/design_default_color_surface"
         android:textSize="35sp"
         android:textStyle="bold"
         android:typeface="normal"
+        android:layout_marginLeft="120dp"
         android:fontFamily="@font/dm_sans" />
 
 </LinearLayout>

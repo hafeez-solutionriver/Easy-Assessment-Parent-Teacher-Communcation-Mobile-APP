@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/student_id"
-        android:layout_width="0dp"
+        android:layout_width="40dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -25,16 +25,17 @@
 
     <TextView
         android:id="@+id/student_name"
-        android:layout_width="0dp"
+        android:layout_width="50dp"
         android:layout_weight="3"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/design_default_color_surface"
-        android:textSize="35sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         android:typeface="normal"
+        android:layout_marginLeft="20dp"
         android:fontFamily="@font/dm_sans" />
 
     </LinearLayout>

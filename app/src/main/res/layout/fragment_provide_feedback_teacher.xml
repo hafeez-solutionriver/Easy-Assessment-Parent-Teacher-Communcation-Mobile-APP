@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="15dp"
+        android:layout_margin="15dp"
+
         >
 
 
@@ -22,7 +23,7 @@
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="80dp"
+            android:layout_marginLeft="60dp"
 
             android:src="@drawable/givefeedbackimage"
             />
@@ -106,7 +107,7 @@
             android:layout_height="wrap_content"
             android:minHeight="70dp"
             android:id="@+id/rating"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="20dp"
 
             style="@style/Widget.MaterialRatingBar.RatingBar" />
         <Button

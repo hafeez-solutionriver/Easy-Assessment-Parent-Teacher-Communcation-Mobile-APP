@@ -162,7 +162,7 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
                         val autoCompleteTextViewStudent: AutoCompleteTextView =
                             requireView().findViewById(R.id.teacher_student_selection)
 
-                        autoCompleteTextViewStudent.onItemSelectedListener
+
 
                         autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
 
