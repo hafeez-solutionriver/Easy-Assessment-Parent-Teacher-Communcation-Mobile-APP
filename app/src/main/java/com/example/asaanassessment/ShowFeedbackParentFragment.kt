@@ -213,7 +213,8 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                 val alertDialog = AlertDialog.Builder(context).create()
                 alertDialog.setTitle("Your Reply")
 
-                alertDialog.setMessage("Parent Reply would be shown here....")
+
+                alertDialog.setMessage(currentItem.parentReply)
                 alertDialog.show()
             }
         }

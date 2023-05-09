@@ -218,7 +218,7 @@ fun displayGraphTeacher(p1: View?, subjectId: String, studentId: String) {
     cartesian.padding(10.0, 10.0, 30.0, 20.0)
     anyChartView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
     // Enable scrolling
-//    cartesian.xScroller().enabled(true)
+    cartesian.xScroller().enabled(true)
     cartesian.xZoom().setToPointsCount(7, false, null)
 
     // Allow overlapping labels
@@ -247,7 +247,7 @@ fun displayGraphTeacher(p1: View?, subjectId: String, studentId: String) {
     val database = FirebaseDatabase.getInstance()
     val homeworkRef = database.getReference("Homework")
 
-    homeworkRef.addValueEventListener(object : ValueEventListener {
+    homeworkRef.addListenerForSingleValueEvent(object : ValueEventListener {
 
         override fun onDataChange(dataSnapshot: DataSnapshot) {
 
