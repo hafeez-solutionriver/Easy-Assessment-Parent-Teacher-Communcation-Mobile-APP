@@ -17,6 +17,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ShowFeedbackParentFragment(val parent:String) : Fragment(){
 
@@ -28,6 +30,7 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
     lateinit var reviews: MutableList<String>
     lateinit var homeworkIds: MutableList<String>
     lateinit var parentsReply: MutableList<String>
+    lateinit var teachersIds: MutableList<String>
     private lateinit var mContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,12 +66,14 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
                 progressDialog.dismiss()
 
                 subjectNames = mutableListOf<String>()
+                teachersIds = mutableListOf<String>()
                 assignmentNames = mutableListOf<String>()
                 studentIds = mutableListOf<String>()
                 studentNames = mutableListOf<String>()
                 reviews = mutableListOf<String>()
                 parentsReply = mutableListOf<String>()
                 homeworkIds = mutableListOf<String>()
+
 
                 for (homeworkSnapshot in dataSnapshot.children) {
 
@@ -80,6 +85,8 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
                         )
                     ) {
 
+                        teachersIds.add(homeworkSnapshot.child("parentId").getValue(String::class.java)
+                            .toString())
                         homeworkIds.add(homeworkSnapshot.key.toString())
                         studentNames.add(
                             homeworkSnapshot.child("studentName").getValue(String::class.java)
@@ -122,7 +129,8 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
                             assignmentNames[index],
                             studentNames[index] + "-" + studentIds[index],
                             reviews[index],
-                            parentsReply[index]
+                            parentsReply[index],
+                            teachersIds[index]
 
 
                         )
@@ -169,6 +177,10 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
         val currentItem = data[position]
 
         val currentHomeworkID = currentItem.homeWorkId
+        val currentTeacherId = currentItem.teacherId
+        val currentStudentNameAndId=currentItem.studentNameWithId
+        val currentHomeworkName=currentItem.homeworkName
+        val currentSubjectName=currentItem.subjectName
         val btn = itemView.findViewById<Button>(R.id.translate_button)
 
         val giveReply = itemView.findViewById<Button>(R.id.reply_button)
@@ -194,7 +206,7 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                     val database = FirebaseDatabase.getInstance()
 
                     // Get a reference to the "Homework" node
-                    val homeworkRef = database.getReference("Homework")
+
 
                     // Get a reference to the "parentReply" node under the specific homework id
                     val parentReplyRef = database.getReference("Homework/$currentHomeworkID/parentReply")
@@ -203,6 +215,34 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                     parentReplyRef.setValue(reply).addOnCompleteListener {
 
                         if (it.isSuccessful) {
+
+
+
+
+
+                            val notificationRef = FirebaseDatabase.getInstance()
+                                .getReference("Teacher/$currentTeacherId/Notification")
+                            // Generate a unique key for the homework node
+                            val notificationKey = notificationRef.push().key!!
+
+                            // Create a new homework object with the given fields
+                            val notification = HashMap<String, Any>()
+
+                            notification["sender"] = "Parent"
+                            notification["time"] = getCurrentTime()
+                            notification["date"] = getCurrentDate()
+                            notification["title"] = "Parent reply"
+                            notification["description"] =
+                                "$currentStudentNameAndId parent has given reply on your feedback of module $currentHomeworkName in $currentSubjectName subject."
+                            notification["isSeen"] = false
+                            notification["isReminder"] = false
+
+
+                            // Put the homework object at the generated key
+                            notificationRef.child(notificationKey)
+                                .setValue(notification)
+
+
                             progress.dismiss()
                         }
                     }
@@ -297,6 +337,18 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
 
         return itemView
     }
+
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
+    }
+
+    private fun getCurrentTime(): String {
+        val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+        val currentTime = Date()
+        return timeFormat.format(currentTime)
+    }
 }
 
 data class CustomListItem(
@@ -306,6 +358,7 @@ data class CustomListItem(
     val homeworkName: String,
     val studentNameWithId: String,
     val review:String,
-    val parentReply:String
+    val parentReply:String,
+    val teacherId:String
 )
 

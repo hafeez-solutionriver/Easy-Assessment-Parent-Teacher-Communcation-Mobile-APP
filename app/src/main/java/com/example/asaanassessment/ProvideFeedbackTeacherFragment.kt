@@ -18,6 +18,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
@@ -247,6 +250,27 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                                     // Put the homework object at the generated key
                                     homeworkRef.child(homeworkKey).setValue(homework)
 
+
+                                    val notificationRef = FirebaseDatabase.getInstance()
+                                        .getReference("Parent/$parentId/Notification")
+                                    // Generate a unique key for the homework node
+                                    val notificationKey = notificationRef.push().key!!
+
+                                    // Create a new homework object with the given fields
+                                    val notification = java.util.HashMap<String, Any>()
+
+                                    notification["sender"] = "Teacher"
+                                    notification["time"] = getCurrentTime()
+                                    notification["date"] = getCurrentDate()
+                                    notification["title"] = "Teacher feedback"
+                                    notification["description"] =
+                                        "${studentNames[StudentIndexSelected]} teacher has provided feedback on homework module $assignmentName in ${subjectNames[SubjectIndexSelected]} subject."
+                                    notification["isSeen"] = false
+                                    notification["isReminder"] = false
+                                    // Put the homework object at the generated key
+                                    notificationRef.child(notificationKey)
+                                        .setValue(notification)
+
                                     progressDialog.dismiss()
 
                                     view.findViewById<com.google.android.material.textfield.TextInputLayout>(
@@ -283,6 +307,17 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
         return view
     }
 
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
+    }
+
+    private fun getCurrentTime(): String {
+        val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+        val currentTime = Date()
+        return timeFormat.format(currentTime)
+    }
 }
 class Homework (
     var subjectId: String = "",
