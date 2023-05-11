@@ -85,7 +85,7 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
                         )
                     ) {
 
-                        teachersIds.add(homeworkSnapshot.child("parentId").getValue(String::class.java)
+                        teachersIds.add(homeworkSnapshot.child("teacherId").getValue(String::class.java)
                             .toString())
                         homeworkIds.add(homeworkSnapshot.key.toString())
                         studentNames.add(

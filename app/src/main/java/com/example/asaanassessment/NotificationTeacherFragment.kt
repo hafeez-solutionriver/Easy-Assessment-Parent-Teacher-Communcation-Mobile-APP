@@ -73,11 +73,11 @@ class NotificationTeacherFragment(val teacher:String) : Fragment() {
                 for (notificationSnapshot in dataSnapshot.children) {
 
                     notificationIds.add(notificationSnapshot.key.toString())
-                    senders.add(notificationSnapshot.child("Sender").getValue(String::class.java).toString())
-                    dates.add(notificationSnapshot.child("Date").getValue(String::class.java).toString())
-                    times.add(notificationSnapshot.child("Time").getValue(String::class.java).toString())
-                    titles.add(notificationSnapshot.child("Title").getValue(String::class.java).toString())
-                    descriptions.add(notificationSnapshot.child("Description").getValue(String::class.java).toString())
+                    senders.add(notificationSnapshot.child("sender").getValue(String::class.java).toString())
+                    dates.add(notificationSnapshot.child("date").getValue(String::class.java).toString())
+                    times.add(notificationSnapshot.child("time").getValue(String::class.java).toString())
+                    titles.add(notificationSnapshot.child("title").getValue(String::class.java).toString())
+                    descriptions.add(notificationSnapshot.child("description").getValue(String::class.java).toString())
                     isSeenList.add(notificationSnapshot.child("isSeen").getValue(Boolean::class.java)!!)
                     isReminderList.add(notificationSnapshot.child("isReminder").getValue(Boolean::class.java)!! )
 

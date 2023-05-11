@@ -43,15 +43,9 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
         super.onCreate(savedInstanceState)
 
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mContext = context
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val database = FirebaseDatabase.getInstance()
         val homeworkRef = database.getReference("Homework")
 
@@ -70,6 +64,17 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
             }
 
         })
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
 
         val view = inflater.inflate(R.layout.fragment_view_progress_parent, container, false)
 
@@ -83,7 +88,7 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
             view.findViewById(R.id.parent_subject_selection)
 
 
-        val studentRef = database.getReference("Student")
+        val studentRef = FirebaseDatabase.getInstance().getReference("Student")
 
 
 
@@ -144,7 +149,7 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
 
 
 
-                        val subjectsRef = database.getReference("Subject")
+                        val subjectsRef = FirebaseDatabase.getInstance().getReference("Subject")
 
                         subjectsRef.addValueEventListener(object : ValueEventListener {
 
