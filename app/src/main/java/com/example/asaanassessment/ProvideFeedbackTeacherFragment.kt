@@ -1,9 +1,13 @@
 package com.example.asaanassessment
 
 import android.animation.ObjectAnimator
+import com.google.firebase.messaging.FirebaseMessaging
+
+
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.os.Message
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +22,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.RemoteMessage
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -270,6 +275,9 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                                     // Put the homework object at the generated key
                                     notificationRef.child(notificationKey)
                                         .setValue(notification)
+
+                                    val fcmToken = "YOUR_FCM_TOKEN"
+
 
                                     progressDialog.dismiss()
 

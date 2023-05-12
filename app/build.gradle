@@ -44,6 +44,7 @@ dependencies {
         exclude group: 'com.google.api.grpc', module: 'proto-google-cloud-translate-v3beta1'
     }
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
 
     annotationProcessor 'com.google.cloud:google-cloud-translate:2.16.0'
     implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'

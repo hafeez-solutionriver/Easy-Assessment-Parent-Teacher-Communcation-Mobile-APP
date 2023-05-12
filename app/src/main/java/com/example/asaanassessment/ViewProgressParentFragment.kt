@@ -212,9 +212,6 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
                         )
 
 
-
-
-
                     }
 
 
@@ -347,10 +344,6 @@ fun displayGraphParent(p1: View?, subjectId: String, studentId: String) {
             }
         })
 }
-
-
-
-
 
 internal class StudentProgressDataEntryInParent internal constructor(
     x: String?,

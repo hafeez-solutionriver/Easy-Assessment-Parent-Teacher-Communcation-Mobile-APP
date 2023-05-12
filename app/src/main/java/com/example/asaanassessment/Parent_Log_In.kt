@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 class Parent_Log_In : AppCompatActivity() {
 
@@ -56,6 +57,15 @@ class Parent_Log_In : AppCompatActivity() {
                             ed.putString("ParentName",parentSnapshot.child("Name").getValue(String::class.java).toString())
                             ed.putString("ParentId",parentSnapshot.key.toString())
                             ed.commit()
+
+                            val fcm_token = database.getReference("Parent/$inputId")
+
+                            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+
+
+                                // Do something with the token, like storing it in your database
+                                fcm_token.child("fcmToken").setValue(token)
+                            }
 
                             val intent = Intent(this@Parent_Log_In,Parent::class.java)
                             intent.putExtra("Name",parentSnapshot.child("Name").getValue(String::class.java).toString())

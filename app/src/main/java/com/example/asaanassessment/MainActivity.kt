@@ -1,5 +1,7 @@
 package com.example.asaanassessment
 
+import android.Manifest
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,7 +12,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
 class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
@@ -67,3 +73,103 @@ fun parent(v: View)
 
     }
 }
+
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        val receiver = remoteMessage.data["receiver"]
+
+
+
+        if(receiver.equals("Teacher"))
+        {
+            val applicationBasedPref =
+                getSharedPreferences("Teacher", Context.MODE_PRIVATE)
+
+
+                val intent = Intent(this, Teacher::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.putExtra(
+                    "Name",
+                    applicationBasedPref.getString("TeacherName", null)
+                )
+
+                intent.putExtra("Id", applicationBasedPref.getString("TeacherId", null))
+                intent.putExtra("isPushNotification",true)
+                val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+
+
+                val notification = NotificationCompat.Builder(this)
+                    .setContentTitle(remoteMessage.data["title"])
+                    .setContentText(remoteMessage.data["body"])
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build()
+                val manager = NotificationManagerCompat.from(applicationContext)
+
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+
+                manager.notify(123, notification)
+
+
+        }
+
+        if(receiver.equals("Parent"))
+        {
+            val applicationBasedPref =
+                getSharedPreferences("Parent", Context.MODE_PRIVATE)
+
+                val intent = Intent(this, Teacher::class.java)
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.putExtra(
+                    "Name",
+                    applicationBasedPref.getString("ParentName", null)
+                )
+            intent.putExtra("isPushNotification",true)
+                intent.putExtra("Id", applicationBasedPref.getString("ParentId", null))
+                val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+
+
+                val notification = NotificationCompat.Builder(this)
+                    .setContentTitle(remoteMessage.data["title"])
+                    .setContentText(remoteMessage.data["body"])
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build()
+                val manager = NotificationManagerCompat.from(applicationContext)
+
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+
+                manager.notify(123, notification)
+
+        }
+
+
+
+
+
+
+
+
+    }
+
+
+}
+

@@ -65,15 +65,33 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         //Step 2
         navigationView.setNavigationItemSelectedListener(this)
 
+        if(intent.getBooleanExtra("isPushNotification",false))
+        {
 
-        val fragmentManager = supportFragmentManager
+            val fragmentManager = supportFragmentManager
 
-        val ft = fragmentManager.beginTransaction()
+            val ft = fragmentManager.beginTransaction()
 
 
-        ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment(teacherId))
+            ft.replace(R.id.teacher_fragment_container, NotificationTeacherFragment(teacherId))
 
-        ft.commit()
+            ft.commit()
+        }
+        else
+
+        {
+            val fragmentManager = supportFragmentManager
+
+            val ft = fragmentManager.beginTransaction()
+
+
+            ft.replace(R.id.teacher_fragment_container, ProvideFeedbackTeacherFragment(teacherId))
+
+            ft.commit()
+        }
+
+
+
     }
 
 
@@ -164,6 +182,7 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+            finishAffinity()
         }
     }
 

@@ -60,13 +60,27 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         navigationView.setNavigationItemSelectedListener(this)
 
 
-        val fragmentManager = supportFragmentManager
+        if(intent.getBooleanExtra("isPushNotification",false))
+        {
+            val fragmentManager = supportFragmentManager
 
-        val ft = fragmentManager.beginTransaction()
+            val ft = fragmentManager.beginTransaction()
 
-        ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment(intent.getStringExtra("Id").toString()))
+            ft.replace(R.id.parent_fragment_container, NotificationParentFragment(intent.getStringExtra("Id").toString()))
 
-        ft.commit()
+            ft.commit()
+        }
+        else
+        {
+            val fragmentManager = supportFragmentManager
+
+            val ft = fragmentManager.beginTransaction()
+
+            ft.replace(R.id.parent_fragment_container, ShowFeedbackParentFragment(intent.getStringExtra("Id").toString()))
+
+            ft.commit()
+        }
+
 
     }
 
@@ -118,6 +132,8 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         else
         {
             super.onBackPressed()
+            finishAffinity()
         }
+
     }
 }

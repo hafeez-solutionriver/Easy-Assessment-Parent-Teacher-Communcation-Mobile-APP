@@ -1,17 +1,26 @@
 package com.example.asaanassessment
 
+import android.Manifest
+import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
 class Teacher_Log_In : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,21 +50,41 @@ class Teacher_Log_In : AppCompatActivity() {
 
                     // Iterate over the children of the Parent node to check for a matching Parent ID and Password.
                     for (teacherSnapshot in dataSnapshot.children) {
-                        if (inputId.equals(teacherSnapshot.key.toString()) && inputPassword.equals(teacherSnapshot.child("Password").getValue(String::class.java).toString())) {
+                        if (inputId.equals(teacherSnapshot.key.toString()) && inputPassword.equals(
+                                teacherSnapshot.child("Password").getValue(String::class.java)
+                                    .toString()
+                            )
+                        ) {
                             progressDialog.dismiss() // hide the dialog when the data is retrieved
 
-                            val applicationBasedPref =getSharedPreferences("Teacher", Context.MODE_PRIVATE)
+                            val applicationBasedPref =
+                                getSharedPreferences("Teacher", Context.MODE_PRIVATE)
                             val ed = applicationBasedPref.edit()
 
-                            ed.putString("TeacherName",teacherSnapshot.child("TeacherName").getValue(String::class.java).toString())
-                            ed.putString("TeacherId",teacherSnapshot.key.toString())
+                            ed.putString(
+                                "TeacherName",
+                                teacherSnapshot.child("TeacherName").getValue(String::class.java)
+                                    .toString()
+                            )
+                            ed.putString("TeacherId", teacherSnapshot.key.toString())
                             ed.commit()
 
+                            val fcm_token = database.getReference("Teacher/$inputId")
 
-                            val intent = Intent(this@Teacher_Log_In,Teacher::class.java)
-                            intent.putExtra("Name",applicationBasedPref.getString("TeacherName",null))
+                            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
 
-                            intent.putExtra("Id",applicationBasedPref.getString("TeacherId",null))
+
+                                // Do something with the token, like storing it in your database
+                                fcm_token.child("fcmToken").setValue(token)
+                            }
+
+                            val intent = Intent(this@Teacher_Log_In, Teacher::class.java)
+                            intent.putExtra(
+                                "Name",
+                                applicationBasedPref.getString("TeacherName", null)
+                            )
+
+                            intent.putExtra("Id", applicationBasedPref.getString("TeacherId", null))
                             startActivity(intent)
                             return@runOnUiThread
                         }
@@ -63,7 +92,11 @@ class Teacher_Log_In : AppCompatActivity() {
 
                     progressDialog.dismiss() // hide the dialog when the data is retrieved
 
-                    Toast.makeText(this@Teacher_Log_In,"Incorrect Parent ID or Password", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@Teacher_Log_In,
+                        "Incorrect Parent ID or Password",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -73,4 +106,9 @@ class Teacher_Log_In : AppCompatActivity() {
         })
 
     }
-}
+
+    }
+
+
+
+    // This class handles the incoming Notifications
