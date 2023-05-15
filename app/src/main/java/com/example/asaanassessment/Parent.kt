@@ -60,6 +60,7 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
         navigationView.setNavigationItemSelectedListener(this)
 
 
+
         if(intent.getBooleanExtra("isPushNotification",false))
         {
             val fragmentManager = supportFragmentManager

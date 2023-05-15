@@ -1,9 +1,11 @@
 package com.example.asaanassessment
 
-import android.animation.ObjectAnimator
-import com.google.firebase.messaging.FirebaseMessaging
 
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlinx.coroutines.*
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
@@ -18,22 +20,28 @@ import android.widget.Button
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
+
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
 
 class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
+
+
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
     var startRating: Float = 0.0F
     lateinit var subjectIds: MutableList<String>
     lateinit var subjectNames: MutableList<String>
+    lateinit var parentFcms: MutableList<String>
 
     lateinit var studentIds: MutableList<String>
     lateinit var studentNames: MutableList<String>
@@ -112,6 +120,7 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
 
             SubjectIndexSelected = position
 
+
             val studentRef = database.getReference("Student")
 
 
@@ -124,18 +133,38 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                     studentNames = mutableListOf<String>()
                     studentIds = mutableListOf<String>()
                     studentParentIds = mutableListOf<String>()
+                    parentFcms = mutableListOf<String>()
                     for (studentSnapshot in dataSnapshot.children) {
                         val studentName =
                             studentSnapshot.child("FirstName").getValue(String::class.java)
 
                         if (studentName != null) {
 
+                            val parentIdDatabase = studentSnapshot.child("ParentId").getValue(String::class.java)
+                                .toString()
                             studentNames.add(studentName)
                             studentIds.add(studentSnapshot.key.toString())
-                            studentParentIds.add(
-                                studentSnapshot.child("ParentId").getValue(String::class.java)
-                                    .toString()
+                            studentParentIds.add(parentIdDatabase)
+
+                            val parentReference = FirebaseDatabase.getInstance().getReference("Parent/$parentIdDatabase")
+
+                            parentReference.addListenerForSingleValueEvent(object :ValueEventListener
+                            {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+
+                                    parentFcms.add(snapshot.child("fcmToken").getValue(String::class.java).toString())
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+
+                                }
+
+                            }
                             )
+
+
+
                         }
                     }
 
@@ -276,9 +305,26 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                                     notificationRef.child(notificationKey)
                                         .setValue(notification)
 
-                                    val fcmToken = "YOUR_FCM_TOKEN"
 
 
+
+
+
+
+                                    runBlocking {
+                                        launch {
+
+
+
+                                            Toast.makeText(mContext,"launch:${parentFcms[StudentIndexSelected]}",Toast.LENGTH_SHORT).show()
+                                            sendPushNotification(
+                                                parentFcms[StudentIndexSelected],
+                                                "Teacher feedback",
+                                                "${studentNames[StudentIndexSelected]} teacher has provided feedback on homework module $assignmentName in ${subjectNames[SubjectIndexSelected]} subject.",
+                                                "Parent"
+                                            )
+
+                                        }}
                                     progressDialog.dismiss()
 
                                     view.findViewById<com.google.android.material.textfield.TextInputLayout>(
@@ -315,6 +361,7 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
         return view
     }
 
+
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = Date()
@@ -325,6 +372,52 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
         val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
         val currentTime = Date()
         return timeFormat.format(currentTime)
+    }
+
+    suspend fun sendPushNotification(token: String, title: String, message: String,receiver:String) {
+
+        if(!token.equals(""))
+        {
+            Toast.makeText(mContext,"Sending notifcation to parent...",Toast.LENGTH_SHORT).show()
+            Toast.makeText(mContext,token,Toast.LENGTH_SHORT).show()
+            val fcmUrl = "https://fcm.googleapis.com/fcm/send"
+            val serverKey = "key=AAAA3YWX8r4:APA91bFBYj4nf1WBsCcz_RhxJwPGnenGaDmw3sZ6EwWsIuwv8q3QaXFn79fQgdadlPwqCSZ3te9dhSK9JoE-Nutbz3AT1gyQNEfgZdGl_1X-ObwfJSGUV6P5PLOXxqQB7iN4ZViQNinr"
+
+            val payload = mapOf(
+                "notification" to mapOf(
+                    "title" to title,
+                    "body" to message,
+                    "receiver" to receiver
+
+                ),
+                "to" to token
+            )
+
+
+            val options = mapOf(
+                "method" to "POST",
+                "headers" to mapOf(
+                    "Content-Type" to "application/json",
+                    "Authorization" to "key=$serverKey"
+                ),
+                "body" to payload
+            )
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    val url = URL(fcmUrl)
+                    val connection = url.openConnection() as HttpURLConnection
+                    options.forEach { (key, value) ->
+                        connection.setRequestProperty(key, value.toString())
+                    }
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                }
+                println("Push notification sent: $response")
+            } catch (error: Exception) {
+                println("Error sending push notification: $error")
+            }
+        }
+
     }
 }
 class Homework (
@@ -337,3 +430,4 @@ class Homework (
     var rating: Float = 0f,
     var parentReply: String = ""
 )
+

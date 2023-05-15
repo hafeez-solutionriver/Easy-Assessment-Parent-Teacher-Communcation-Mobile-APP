@@ -65,6 +65,10 @@ class Teacher : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListe
         //Step 2
         navigationView.setNavigationItemSelectedListener(this)
 
+
+
+
+
         if(intent.getBooleanExtra("isPushNotification",false))
         {
 
