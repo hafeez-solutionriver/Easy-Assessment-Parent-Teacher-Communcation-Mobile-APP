@@ -139,39 +139,48 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                     studentParentIds = mutableListOf<String>()
                     parentFcms = mutableListOf<String>()
                     for (studentSnapshot in dataSnapshot.children) {
-                        val studentName =
-                            studentSnapshot.child("FirstName").getValue(String::class.java)
 
-                        if (studentName != null) {
+                        for(subject in studentSnapshot.child("Subjects").children)
+                        {
 
-                            val parentIdDatabase = studentSnapshot.child("ParentId").getValue(String::class.java)
-                                .toString()
-                            studentNames.add(studentName)
-                            studentIds.add(studentSnapshot.key.toString())
-                            studentParentIds.add(parentIdDatabase)
-
-                            val parentReference = FirebaseDatabase.getInstance().getReference("Parent/$parentIdDatabase")
-
-                            parentReference.addListenerForSingleValueEvent(object :ValueEventListener
+                            if(subject.value.toString().equals(subjectIds[SubjectIndexSelected]))
                             {
-                                override fun onDataChange(snapshot: DataSnapshot) {
+                                val studentName =
+                                    studentSnapshot.child("FirstName").getValue(String::class.java)
 
-                                    parentFcms.add(snapshot.child("fcmToken").getValue(String::class.java).toString())
+
+                                val parentIdDatabase =
+                                    studentSnapshot.child("ParentId").getValue(String::class.java)
+                                        .toString()
+                                studentNames.add(studentName.toString())
+                                studentIds.add(studentSnapshot.key.toString())
+                                studentParentIds.add(parentIdDatabase)
+
+                                val parentReference =
+                                    FirebaseDatabase.getInstance().getReference("Parent/$parentIdDatabase")
+
+                                parentReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+
+                                        parentFcms.add(
+                                            snapshot.child("fcmToken").getValue(String::class.java)
+                                                .toString()
+                                        )
+
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+
+                                    }
 
                                 }
-
-                                override fun onCancelled(error: DatabaseError) {
-
-                                }
-
+                                )
                             }
-                            )
 
-
-
-                        }
                     }
 
+
+                }
                     val items = mutableListOf<String>()
 
                     for (index in studentNames.indices) {

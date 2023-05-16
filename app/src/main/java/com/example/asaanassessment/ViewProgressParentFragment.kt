@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 
-class ViewProgressParentFragment(var parent:String) : Fragment() {
+class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
@@ -34,10 +34,11 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
     lateinit var subjectIds: MutableList<String>
     lateinit var subjectNames: MutableList<String>
 
+
     lateinit var studentIds: MutableList<String>
     lateinit var studentNames: MutableList<String>
 
-    lateinit var studentSubjects: MutableMap<Int, MutableList<String>>
+    lateinit var studentSubjects: MutableMap<String, MutableList<String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +50,7 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
         val database = FirebaseDatabase.getInstance()
         val homeworkRef = database.getReference("Homework")
 
-        homeworkRef.addValueEventListener(object :ValueEventListener
+        homeworkRef.addListenerForSingleValueEvent(object :ValueEventListener
         {
             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -99,30 +100,33 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
 
                 studentNames = mutableListOf<String>()
                 studentIds = mutableListOf<String>()
-
                 studentSubjects = hashMapOf()
 
-                var stdIndex=0
                 for (studentSnapshot in dataSnapshot.children) {
-                    val studentName =
-                        studentSnapshot.child("FirstName").getValue(String::class.java)
 
-                    if (studentName != null && studentSnapshot.child("ParentId").getValue(String::class.java).equals(parent)) {
+                    if (studentSnapshot.child("ParentId").getValue(String::class.java)?.equals(parentId)!!)
+                    {
+                        val studentFirstName =
+                            studentSnapshot.child("FirstName")
+                                .getValue(String::class.java)
 
-                            studentNames.add(studentName)
-                            studentIds.add(studentSnapshot.key.toString())
+                        val studentLastName = studentSnapshot.child("LastName")
+                            .getValue(String::class.java)
 
-                        var index=0
-                        var stdSubjects = mutableListOf<String>()
+                        studentNames.add(studentFirstName.toString()+" "+studentLastName)
+                        studentIds.add(studentSnapshot.key.toString())
+
+
+                        var subjects  = mutableListOf<String>()
                         for(subject in studentSnapshot.child("Subjects").children)
                         {
-                         stdSubjects.add(subject.child((index++.toString())).getValue(String::class.java).toString())
-
+                            subjects.add(subject.value.toString())
                         }
-                        studentSubjects.put(stdIndex++,stdSubjects)
 
-
+                        studentSubjects[studentSnapshot.key.toString()] = subjects
                     }
+
+
                 }
 
                 val items = mutableListOf<String>()
@@ -158,38 +162,17 @@ class ViewProgressParentFragment(var parent:String) : Fragment() {
 
                                 subjectNames = mutableListOf<String>()
                                 subjectIds = mutableListOf<String>()
-                                for (subjectSnapshot in dataSnapshot.children) {
-                                    val subjectName =
-                                        subjectSnapshot.child("CourseName").getValue(String::class.java)
 
 
-                                    if (subjectName != null) {
-
-                                        var isSameSubject = false
-
-                                        for ((id, subjects) in studentSubjects) {
-
-                                            for (subjectKey in subjects) {
-                                                if(subjectKey.equals(subjectSnapshot.key.toString()))
-                                                {
-                                                    isSameSubject=true
-                                                    break;
-                                                }
-                                            }
-                                            if(isSameSubject)
-                                            {
-                                                break
-                                            }
-                                        }
-
-                                        if(!isSameSubject)
-                                        {
-                                            subjectNames.add(subjectName)
-                                            subjectIds.add(subjectSnapshot.key.toString())
-                                        }
-
+                                for(subject in dataSnapshot.children)
+                                {
+                                    if(studentSubjects[studentIds[StudentIndexSelected]]?.contains(subject.key.toString())!!)
+                                    {
+                                        subjectNames.add(subject.child("CourseName").getValue(String::class.java).toString())
+                                        subjectIds.add(subject.key.toString())
                                     }
                                 }
+
 
                                 val items = mutableListOf<String>()
 

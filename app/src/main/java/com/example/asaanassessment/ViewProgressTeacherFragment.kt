@@ -117,7 +117,6 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
                 val studentRef = database.getReference("Student")
 
 
-
                 studentRef.addValueEventListener(object : ValueEventListener {
 
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -127,33 +126,24 @@ class ViewProgressTeacherFragment(val teacher:String) : Fragment() {
                         studentIds = mutableListOf<String>()
 
                         for (studentSnapshot in dataSnapshot.children) {
-                            val studentName =
-                                studentSnapshot.child("FirstName").getValue(String::class.java)
 
-                            if (studentName != null) {
+                            for (subject in studentSnapshot.child("Subjects").children) {
 
-                                var isSameSubject=false
+                                if (subject.value.toString()
+                                        .equals(subjectIds[SubjectIndexSelected])
+                                ) {
+                                    val studentName =
+                                        studentSnapshot.child("FirstName")
+                                            .getValue(String::class.java)
 
-                                var index=0
-                                for(subject in studentSnapshot.child("Subjects").children)
-                                {
-                                    if(subject.child((index++.toString())).getValue(String::class.java).equals(subjectIds[SubjectIndexSelected])){
-                                        isSameSubject=true
-                                        break;
-                                    }
-                                }
-
-                                if(!isSameSubject)
-                                {
-                                    studentNames.add(studentName)
+                                    studentNames.add(studentName.toString())
                                     studentIds.add(studentSnapshot.key.toString())
+
+
                                 }
-
-
 
                             }
                         }
-
                         val items = mutableListOf<String>()
 
                         for (index in studentNames.indices) {

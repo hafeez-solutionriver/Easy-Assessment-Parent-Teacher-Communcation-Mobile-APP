@@ -109,13 +109,14 @@ class ShowFeedbackTeacherFragment(val teacher:String) : Fragment() {
                 val items = mutableListOf<CustomListItemTeacherFeedback>()
 
                 for (index in studentNames.indices) {
+                    val reversedIndex = studentNames.size - 1 - index
                     items.add(
                         CustomListItemTeacherFeedback(
-                            subjectNames[index],
-                            assignmentNames[index],
-                            studentNames[index] + "-" + studentIds[index],
-                            reviews[index],
-                            parentsReply[index]
+                            subjectNames[reversedIndex],
+                            assignmentNames[reversedIndex],
+                            studentNames[reversedIndex] + "-" + studentIds[reversedIndex],
+                            reviews[reversedIndex],
+                            parentsReply[reversedIndex]
                         )
                     )
                 }

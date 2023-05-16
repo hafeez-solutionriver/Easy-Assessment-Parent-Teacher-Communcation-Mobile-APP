@@ -17,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    lateinit var drawerLayout: DrawerLayout;
+    lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
     lateinit var toolbar: Toolbar
 

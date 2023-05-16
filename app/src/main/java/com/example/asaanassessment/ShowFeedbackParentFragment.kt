@@ -130,16 +130,18 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
                 val items = mutableListOf<CustomListItem>()
 
                 for (index in studentNames.indices) {
+
+                    val reversedIndex = studentNames.size - 1 - index
                     items.add(
                         CustomListItem(
 
-                            homeworkIds[index],
-                            subjectNames[index],
-                            assignmentNames[index],
-                            studentNames[index] + "-" + studentIds[index],
-                            reviews[index],
-                            parentsReply[index],
-                            teachersIds[index]
+                            homeworkIds[reversedIndex],
+                            subjectNames[reversedIndex],
+                            assignmentNames[reversedIndex],
+                            studentNames[reversedIndex] + "-" + studentIds[reversedIndex],
+                            reviews[reversedIndex],
+                            parentsReply[reversedIndex],
+                            teachersIds[reversedIndex]
 
 
                         )
@@ -264,6 +266,7 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
 
 
                                         sendNotificaitonUsinfokhttp(fcmToken,"$currentStudentNameAndId parent has given reply on feedback of $currentHomeworkName.")
+
 
                                     }
                                 }

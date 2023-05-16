@@ -204,6 +204,12 @@ class SendReminderTeacherFragment(val teacher:String) : Fragment() {
 
 
                             callNotificaiton(title, description)
+                            view.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.notificationtitle).editText?.text?.clear()
+                            view.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.notificationdescription).editText?.text?.clear()
+                            Toast.makeText(mContext, "Successfully sent ", Toast.LENGTH_SHORT)
+                                .show()
+
+
                         }
 
 
