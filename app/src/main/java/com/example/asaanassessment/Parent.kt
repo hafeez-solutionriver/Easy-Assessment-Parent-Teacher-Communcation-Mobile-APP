@@ -1,5 +1,6 @@
 package com.example.asaanassessment
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.FirebaseDatabase
 
 
 class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -109,14 +111,37 @@ class Parent : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListe
             ft.replace(R.id.parent_fragment_container, NotificationParentFragment(intent.getStringExtra("Id").toString()))
         } else if (id == R.id.logout_item_parent) {
 
-            val applicationBasedPref =getSharedPreferences("Parent", Context.MODE_PRIVATE)
-            val ed = applicationBasedPref.edit()
+            val progressDialog = ProgressDialog.show(
+                this, // context
+                "Logging out", // title
+                "Loading. Please wait...", // message
+                true // indeterminate
+            )
 
-            ed.clear()
-            ed.commit()
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
+
+            val parentId = intent.getStringExtra("Id").toString()
+            val parentReplyRef = FirebaseDatabase.getInstance().getReference("Parent/$parentId/fcmToken")
+
+            // Set the value for parentReply
+            parentReplyRef.setValue("").addOnCompleteListener{
+
+                if (it.isSuccessful) {
+
+                    val applicationBasedPref =getSharedPreferences("Parent", Context.MODE_PRIVATE)
+                    val ed = applicationBasedPref.edit()
+
+                    ed.clear()
+                    ed.commit()
+                    progressDialog.dismiss()
+                    val intent = Intent(applicationContext, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+
+
+                }
+            }
+
+
 
     }
 

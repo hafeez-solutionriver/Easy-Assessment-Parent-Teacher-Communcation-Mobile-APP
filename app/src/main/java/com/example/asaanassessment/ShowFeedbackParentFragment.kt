@@ -17,6 +17,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,6 +38,8 @@ class ShowFeedbackParentFragment(val parent:String) : Fragment(){
     lateinit var homeworkIds: MutableList<String>
     lateinit var parentsReply: MutableList<String>
     lateinit var teachersIds: MutableList<String>
+    lateinit var teachersFcm: MutableList<String>
+
     private lateinit var mContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -243,6 +252,27 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                                 .setValue(notification)
 
 
+                            val reference =
+                                FirebaseDatabase.getInstance().reference.child("Teacher")
+                                    .child(currentTeacherId).child("fcmToken")
+
+                            reference.addListenerForSingleValueEvent(object :
+                                ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    val fcmToken = dataSnapshot.value as? String
+                                    if (fcmToken != null) {
+
+
+                                        sendNotificaitonUsinfokhttp(fcmToken,"$currentStudentNameAndId parent has given reply on feedback of $currentHomeworkName.")
+
+                                    }
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // Handle any error that occurred during retrieval
+                                }
+                            })
+
                             progress.dismiss()
                         }
                     }
@@ -348,6 +378,49 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
         val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
         val currentTime = Date()
         return timeFormat.format(currentTime)
+    }
+
+    fun sendNotificaitonUsinfokhttp(token:String,body:String) {
+
+
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = "https://fcm.googleapis.com/fcm/send"
+            val serverKey = "AAAA3YWX8r4:APA91bFBYj4nf1WBsCcz_RhxJwPGnenGaDmw3sZ6EwWsIuwv8q3QaXFn79fQgdadlPwqCSZ3te9dhSK9JoE-Nutbz3AT1gyQNEfgZdGl_1X-ObwfJSGUV6P5PLOXxqQB7iN4ZViQNinr"
+
+            val json = JSONObject()
+            val data = JSONObject()
+            data.put("title", "Teacher Announcement")
+            data.put("body", body)
+            data.put("receiver", "Teacher")
+            json.put("data", data)
+            json.put("to", token)
+
+            val mediaType = "application/json; charset=utf-8".toMediaType()
+            val requestBody = json.toString().toRequestBody(mediaType)
+
+
+
+            val request = okhttp3.Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "key=$serverKey")
+                .build()
+
+            val client = OkHttpClient()
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+
+                    return@launch
+                }
+
+                // Notification sent successfully
+
+            }
+
+        }
+
     }
 }
 

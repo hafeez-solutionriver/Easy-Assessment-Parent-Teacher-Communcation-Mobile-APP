@@ -86,9 +86,9 @@ class NotificationTeacherFragment(val teacher:String) : Fragment() {
                 val items = mutableListOf<NotificationTeacher>()
 
                 for (index in notificationIds.indices) {
-                    items.add(NotificationTeacher(notificationIds[index],senders[index],dates[index],times[index],titles[index],descriptions[index],isSeenList[index],isReminderList[index]))
+                    val reversedIndex = notificationIds.size - 1 - index
+                    items.add(NotificationTeacher(notificationIds[reversedIndex], senders[reversedIndex], dates[reversedIndex], times[reversedIndex], titles[reversedIndex], descriptions[reversedIndex], isSeenList[reversedIndex], isReminderList[reversedIndex]))
                 }
-
                 val adapter = NotificationAdapterTeacher(mContext,items)
                 listView.adapter = adapter
 
