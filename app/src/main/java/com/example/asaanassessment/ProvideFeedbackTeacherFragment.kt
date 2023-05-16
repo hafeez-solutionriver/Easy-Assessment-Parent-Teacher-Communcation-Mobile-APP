@@ -21,12 +21,16 @@ import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
+
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
+
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -304,27 +308,8 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                                     // Put the homework object at the generated key
                                     notificationRef.child(notificationKey)
                                         .setValue(notification)
+                                    sendNotificaitonUsinfokhttp(parentFcms[StudentIndexSelected],"${studentNames[StudentIndexSelected]} teacher has provided feedback on homework module $assignmentName in ${subjectNames[SubjectIndexSelected]} subject.")
 
-
-
-
-
-
-
-                                    runBlocking {
-                                        launch {
-
-
-
-                                            Toast.makeText(mContext,"launch:${parentFcms[StudentIndexSelected]}",Toast.LENGTH_SHORT).show()
-                                            sendPushNotification(
-                                                parentFcms[StudentIndexSelected],
-                                                "Teacher feedback",
-                                                "${studentNames[StudentIndexSelected]} teacher has provided feedback on homework module $assignmentName in ${subjectNames[SubjectIndexSelected]} subject.",
-                                                "Parent"
-                                            )
-
-                                        }}
                                     progressDialog.dismiss()
 
                                     view.findViewById<com.google.android.material.textfield.TextInputLayout>(
@@ -361,7 +346,6 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
         return view
     }
 
-
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = Date()
@@ -374,17 +358,60 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
         return timeFormat.format(currentTime)
     }
 
+
+    fun sendNotificaitonUsinfokhttp(token:String,body:String) {
+
+
+
+        GlobalScope.launch(Dispatchers.IO) {
+        val url = "https://fcm.googleapis.com/fcm/send"
+        val serverKey = "AAAA3YWX8r4:APA91bFBYj4nf1WBsCcz_RhxJwPGnenGaDmw3sZ6EwWsIuwv8q3QaXFn79fQgdadlPwqCSZ3te9dhSK9JoE-Nutbz3AT1gyQNEfgZdGl_1X-ObwfJSGUV6P5PLOXxqQB7iN4ZViQNinr"
+
+        val json = JSONObject()
+        val data = JSONObject()
+        data.put("title", "Teacher Feedback")
+        data.put("body", body)
+        data.put("receiver", "Parent")
+        json.put("data", data)
+        json.put("to", token)
+
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toString().toRequestBody(mediaType)
+
+
+
+                     val request = okhttp3.Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "key=$serverKey")
+                    .build()
+
+                val client = OkHttpClient()
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+
+                        return@launch
+                    }
+
+                    // Notification sent successfully
+
+                }
+
+        }
+
+    }
     suspend fun sendPushNotification(token: String, title: String, message: String,receiver:String) {
 
         if(!token.equals(""))
         {
-            Toast.makeText(mContext,"Sending notifcation to parent...",Toast.LENGTH_SHORT).show()
-            Toast.makeText(mContext,token,Toast.LENGTH_SHORT).show()
+
+
             val fcmUrl = "https://fcm.googleapis.com/fcm/send"
             val serverKey = "key=AAAA3YWX8r4:APA91bFBYj4nf1WBsCcz_RhxJwPGnenGaDmw3sZ6EwWsIuwv8q3QaXFn79fQgdadlPwqCSZ3te9dhSK9JoE-Nutbz3AT1gyQNEfgZdGl_1X-ObwfJSGUV6P5PLOXxqQB7iN4ZViQNinr"
 
             val payload = mapOf(
-                "notification" to mapOf(
+                "data" to mapOf(
                     "title" to title,
                     "body" to message,
                     "receiver" to receiver
@@ -412,7 +439,7 @@ class ProvideFeedbackTeacherFragment(val teacher:String) : Fragment() {
                     }
                     connection.inputStream.bufferedReader().use { it.readText() }
                 }
-                println("Push notification sent: $response")
+                Toast.makeText(mContext,"Sent.",Toast.LENGTH_SHORT).show()
             } catch (error: Exception) {
                 println("Error sending push notification: $error")
             }
