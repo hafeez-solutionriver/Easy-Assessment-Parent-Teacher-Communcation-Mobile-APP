@@ -3,6 +3,7 @@ package com.example.asaanassessment
 
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,8 +28,12 @@ import com.google.firebase.database.ValueEventListener
 
 class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
+    companion object{
+        var isAlreadyShownGraph =false
+    }
     var StudentIndexSelected: Int = -1
     var SubjectIndexSelected: Int = -1
+
     private lateinit var mContext: Context
 
     lateinit var subjectIds: MutableList<String>
@@ -47,25 +52,8 @@ class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val database = FirebaseDatabase.getInstance()
-        val homeworkRef = database.getReference("Homework")
-
-        homeworkRef.addListenerForSingleValueEvent(object :ValueEventListener
-        {
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                if(SubjectIndexSelected!=-1 && StudentIndexSelected!=-1)
-                {
-                    displayGraphParent(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected])
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -93,7 +81,7 @@ class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
 
 
-        studentRef.addValueEventListener(object : ValueEventListener {
+        studentRef.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -140,66 +128,10 @@ class ViewProgressParentFragment(var parentId:String) : Fragment() {
                     ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
                 autoCompleteTextViewStudent.setAdapter(adapterStudent)
 
-                autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
-
-                    StudentIndexSelected = position
-
-                    if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
-
-                        displayGraphParent(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected])
-                    }
-                    else
-                    {
 
 
 
-                        val subjectsRef = FirebaseDatabase.getInstance().getReference("Subject")
 
-                        subjectsRef.addValueEventListener(object : ValueEventListener {
-
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-
-                                subjectNames = mutableListOf<String>()
-                                subjectIds = mutableListOf<String>()
-
-
-                                for(subject in dataSnapshot.children)
-                                {
-                                    if(studentSubjects[studentIds[StudentIndexSelected]]?.contains(subject.key.toString())!!)
-                                    {
-                                        subjectNames.add(subject.child("CourseName").getValue(String::class.java).toString())
-                                        subjectIds.add(subject.key.toString())
-                                    }
-                                }
-
-
-                                val items = mutableListOf<String>()
-
-                                for (index in subjectNames.indices) {
-                                    items.add(subjectNames[index] + "  -  " + subjectIds[index])
-                                }
-                                val adapter =
-                                    ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
-                                autoCompleteTextViewSubject.setAdapter(adapter)
-                            }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                Toast.makeText(mContext, databaseError.toException().toString(), Toast.LENGTH_SHORT)
-                            }
-
-
-                        }
-
-
-                        )
-
-
-                    }
-
-
-
-                }
 // Create an ArrayAdapter with the items and set it to the AutoCompleteTextView
 
             }
@@ -217,16 +149,67 @@ class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
 
         )
+        autoCompleteTextViewStudent.setOnItemClickListener { parent, view, position, id ->
+
+            StudentIndexSelected = position
+
+            val subjectsRef = FirebaseDatabase.getInstance().getReference("Subject")
+
+            subjectsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+
+                    subjectNames = mutableListOf<String>()
+                    subjectIds = mutableListOf<String>()
+
+
+                    for(subject in dataSnapshot.children)
+                    {
+                        if(studentSubjects[studentIds[StudentIndexSelected]]?.contains(subject.key.toString())!!)
+                        {
+                            subjectNames.add(subject.child("CourseName").getValue(String::class.java).toString())
+                            subjectIds.add(subject.key.toString())
+                        }
+                    }
+
+
+                    val items = mutableListOf<String>()
+
+                    for (index in subjectNames.indices) {
+                        items.add(subjectNames[index] + "  -  " + subjectIds[index])
+                    }
+                    val adapter =
+                        ArrayAdapter(mContext, android.R.layout.simple_dropdown_item_1line, items)
+                    autoCompleteTextViewSubject.setAdapter(adapter)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Toast.makeText(mContext, databaseError.toException().toString(), Toast.LENGTH_SHORT)
+                }
+
+
+            }
+
+
+            )
+
+
+        }
+
+
 
         autoCompleteTextViewSubject.setOnItemClickListener { parent, view, position, id ->
-            val selectedItem = parent.getItemAtPosition(position) as String
+
 
 
             SubjectIndexSelected = position
 
             if (StudentIndexSelected != -1 && SubjectIndexSelected != -1) {
 
-                displayGraphParent(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected])
+
+                        getHomeWorkData(requireView(),subjectIds[SubjectIndexSelected],studentIds[StudentIndexSelected],subjectNames[SubjectIndexSelected])
+
             }
 
         }
@@ -239,93 +222,132 @@ class ViewProgressParentFragment(var parentId:String) : Fragment() {
 
 
 
+fun getHomeWorkData(parentView: View,subjectId: String, studentId: String,subjectName:String):MutableList<DataEntry>{
 
-
-fun displayGraphParent(p1: View?, subjectId: String, studentId: String) {
+    val seriesData : MutableList<DataEntry> = ArrayList()
 
     val database = FirebaseDatabase.getInstance()
     val homeworkRef = database.getReference("Homework")
 
-    homeworkRef
-        .addListenerForSingleValueEvent(object : ValueEventListener {
+    homeworkRef.addListenerForSingleValueEvent(object : ValueEventListener {
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val anyChartView: AnyChartView = p1!!.findViewById<AnyChartView>(R.id.line_chart_parent)
-
-                val cartesian = AnyChart.column()
-
-                cartesian.animation(true)
-
-                cartesian.padding(10.0, 10.0, 30.0, 20.0)
-                anyChartView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                // Enable scrolling
-                cartesian.xScroller().enabled(true)
-                cartesian.xZoom().setToPointsCount(7, false, null)
-
-                // Allow overlapping labels
-                cartesian.xAxis(0).overlapMode(LabelsOverlapMode.ALLOW_OVERLAP)
-
-                cartesian.crosshair().enabled(true)
-                cartesian.crosshair()
-                    .yLabel(true)
-                    .yStroke(null as Stroke?, null, null, null as String?, null as String?)
-
-                cartesian.tooltip().positionMode(TooltipPositionMode.CHART)
-
-                cartesian.title("Student Progress Chart")
-
-                cartesian.yAxis(0).title("Progress out of 5")
-                cartesian.yScale().minimum(0.0)
-                cartesian.yScale().maximum(5.0)
-                cartesian.yScale().ticks().interval(0.5)
-
-                cartesian.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
-
-                val seriesData: MutableList<DataEntry> = ArrayList()
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
 
 
-                for (homeworkSnapshot in dataSnapshot.children) {
 
-                    val databaseSubjectId = homeworkSnapshot.child("subjectId").getValue(String::class.java)
-                    val databaseStudentId = homeworkSnapshot.child("studentId").getValue(String::class.java)
-                    val databaseRating = homeworkSnapshot.child("rating").getValue(Long::class.java)
 
-                    if (databaseSubjectId != null && databaseStudentId != null && databaseRating != null
-                        && databaseSubjectId.equals(subjectId) && databaseStudentId.equals(studentId)) {
 
-                        val assignmentName = homeworkSnapshot.child("assignmentName").getValue(String::class.java)
+            for (homeworkSnapshot in dataSnapshot.children) {
 
-                        if (assignmentName != null) {
-                            seriesData.add(StudentProgressDataEntryInTeacher(assignmentName, databaseRating.toDouble()))
+                val databaseSubjectId =
+                    homeworkSnapshot.child("subjectId").getValue(String::class.java).toString()
+                val databaseStudentId =
+                    homeworkSnapshot.child("studentId").getValue(String::class.java).toString()
+                val databaseRating =
+                    homeworkSnapshot.child("rating").getValue(Long::class.java).toString()
 
-                        }
+                if (databaseSubjectId.equals(subjectId) && databaseStudentId.equals(studentId)) {
+
+
+                    val assignmentName =
+                        homeworkSnapshot.child("assignmentName").getValue(String::class.java)
+                            .toString()
+
+                    if (assignmentName != null) {
+                        seriesData.add(
+                            StudentProgressDataEntryInParent(
+                                assignmentName,
+                                databaseRating.toDouble()
+                            )
+                        )
+
+
+
                     }
                 }
-
-                val set = Set.instantiate()
-                set.data(seriesData)
-                val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
-
-                val series1 = cartesian.column(series1Mapping)
-                series1.name("Student Progress")
-                series1.hovered().markers().enabled(true)
-                series1.hovered().markers()
-                    .type(MarkerType.CIRCLE)
-                    .size(4.0)
-                series1.tooltip()
-                    .position("right")
-                    .anchor(Anchor.LEFT_CENTER)
-                    .offsetX(5.0)
-                    .offsetY(5.0)
-
-                anyChartView.setChart(cartesian)
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(p1?.context, databaseError.toException().toString(), Toast.LENGTH_SHORT)
-            }
-        })
+            displayGraphParent(parentView,seriesData, subjectName,parentView.context)
+        }
+
+
+
+        override fun onCancelled(databaseError: DatabaseError) {
+
+        }
+    })
+
+
+
+return seriesData
+
+}
+
+fun displayGraphParent(p1: View?, seriesData: MutableList<DataEntry>,subjectName:String,mContext:Context) {
+
+
+    val anyChartView: AnyChartView = p1!!.findViewById(R.id.line_chart_parent)
+
+    if(seriesData.size==0)
+    {
+       if(ViewProgressParentFragment.isAlreadyShownGraph){
+           anyChartView.clear()
+       }
+
+        Toast.makeText(mContext,"No Record found for given subject homework!",Toast.LENGTH_SHORT).show()
+    }
+
+    else
+    {
+        ViewProgressParentFragment.isAlreadyShownGraph=true
+        val cartesian = AnyChart.column()
+
+
+        cartesian.animation(true)
+
+        cartesian.padding(10.0, 10.0, 30.0, 20.0)
+        anyChartView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        // Enable scrolling
+        cartesian.xScroller().enabled(true)
+        cartesian.xZoom().setToPointsCount(7, false, null)
+
+        // Allow overlapping labels
+        cartesian.xAxis(0).overlapMode(LabelsOverlapMode.ALLOW_OVERLAP)
+
+        cartesian.crosshair().enabled(true)
+        cartesian.crosshair()
+            .yLabel(true)
+            .yStroke(null as Stroke?, null, null, null as String?, null as String?)
+
+        cartesian.tooltip().positionMode(TooltipPositionMode.CHART)
+
+        cartesian.title("Student Progress in : $subjectName")
+
+        cartesian.yAxis(0).title("Progress out of 5")
+        cartesian.yScale().minimum(0.0)
+        cartesian.yScale().maximum(5.0)
+        cartesian.yScale().ticks().interval(0.5)
+
+        cartesian.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+        val set = Set.instantiate()
+        set.data(seriesData)
+        val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
+
+        val series1 = cartesian.column(series1Mapping)
+        series1.name("Student Progress")
+        series1.hovered().markers().enabled(true)
+        series1.hovered().markers()
+            .type(MarkerType.CIRCLE)
+            .size(4.0)
+        series1.tooltip()
+            .position("right")
+            .anchor(Anchor.LEFT_CENTER)
+            .offsetX(5.0)
+            .offsetY(5.0)
+
+        anyChartView.setChart(cartesian)
+    }
+
 }
 
 internal class StudentProgressDataEntryInParent internal constructor(

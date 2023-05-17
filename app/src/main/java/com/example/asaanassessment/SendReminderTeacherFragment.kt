@@ -152,11 +152,7 @@ class SendReminderTeacherFragment(val teacher:String) : Fragment() {
 
 
                                             parentFcms.add(fcmToken)
-                                            Toast.makeText(
-                                                context,
-                                                "Parent fcms length: ${parentFcms.size}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+
                                         }
                                     }
 
