@@ -321,7 +321,7 @@ class CustomListAdapter(private val context: Context, private val data: List<Cus
                     try {
                         // Create a Translate client.
                         val options = TranslateOptions.newBuilder()
-                            .setApiKey("AIzaSyAjzqPvfa_73xPMjJTHnTbFAr8IQjn9HU8")
+                            .setApiKey("--MyAPIKeyForTranslation--")
                             .build()
                         val translate = options.service
 
