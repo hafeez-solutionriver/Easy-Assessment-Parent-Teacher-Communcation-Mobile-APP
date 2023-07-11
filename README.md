@@ -40,11 +40,3 @@ To install and run the Android app, follow these steps:
 1. Clone the repository: `git clone https://github.com/yourusername/asaan-assessment.git`
 2. Open the project in Android Studio.
 3. Build and run the app on an Android device or emulator.
-
-To set up and run the web portal, follow these steps:
-1. Clone the repository: `git clone https://github.com/yourusername/asaan-assessment-web.git`
-2. Navigate to the project directory: `cd asaan-assessment-web`
-3. Install dependencies: `npm install`
-4. Start the development server: `npm start`
-
-Note: Make sure you have the necessary environment setup, including Android Studio and Node.js.
